@@ -67,11 +67,11 @@ export function InvestmentsScreen() {
       />
 
       {summary && (
-        <Card style={{ marginBottom: spacing.md }}>
-          <Text style={styles.cardLabel}>Asset Allocation ({formatCurrency(summary.totalMarketValue)} total)</Text>
+        <View style={{ marginBottom: spacing.md }}>
+          <Text style={styles.sectionLabel}>Asset Allocation ({formatCurrency(summary.totalMarketValue)} total)</Text>
           <View style={styles.allocGrid}>
             {summary.allocation.map((a) => (
-              <View key={a.assetClass} style={styles.allocItem}>
+              <Card key={a.assetClass} style={styles.allocCard}>
                 <Text style={styles.allocClass}>{a.assetClass.replace(/_/g, ' ')}</Text>
                 <Text style={styles.allocPct}>{a.actualPct}%</Text>
                 <View style={styles.barTrack}>
@@ -82,10 +82,10 @@ export function InvestmentsScreen() {
                     Limit: {a.regulatoryLimitPct}% {a.breachesLimit ? '(BREACH)' : ''}
                   </Text>
                 )}
-              </View>
+              </Card>
             ))}
           </View>
-        </Card>
+        </View>
       )}
 
       <Card>
@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.md },
   error: { color: colors.danger, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
-  allocGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg },
-  allocItem: { minWidth: 200, flexGrow: 1 },
+  sectionLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
+  allocGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  allocCard: { minWidth: 220, maxWidth: 480, flexGrow: 1, flexShrink: 1, flexBasis: 220 },
   allocClass: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },
   allocPct: { ...typography.h3, color: colors.textPrimary, marginBottom: 6 },
   barTrack: { height: 6, borderRadius: 3, backgroundColor: colors.surfaceAlt, overflow: 'hidden' },

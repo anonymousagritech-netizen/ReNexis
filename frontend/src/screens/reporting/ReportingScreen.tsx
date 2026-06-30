@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   retroLabel: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },
   retroValue: { ...typography.h3, color: colors.textPrimary },
   heatmapGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  heatmapTile: { minWidth: 160, borderRadius: 10, padding: spacing.md, borderWidth: 1, borderColor: colors.border },
+  heatmapTile: { minWidth: 200, maxWidth: 480, flexGrow: 1, flexShrink: 1, flexBasis: 200, borderRadius: 10, padding: spacing.md, borderWidth: 1, borderColor: colors.border },
   heatmapZone: { ...typography.bodyMedium, color: colors.white, marginBottom: 4 },
   heatmapValue: { ...typography.small, color: colors.white },
 });

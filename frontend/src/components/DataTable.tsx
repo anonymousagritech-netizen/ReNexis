@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   cellBorder: {
     borderRightWidth: 1,
@@ -132,9 +133,11 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textMuted,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
   cellText: {
     ...typography.body,
     color: colors.textPrimary,
+    textAlign: 'center',
   },
 });

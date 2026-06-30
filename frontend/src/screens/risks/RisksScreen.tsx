@@ -74,17 +74,17 @@ export function RisksScreen() {
       />
 
       {accumulation.length > 0 && (
-        <Card style={{ marginBottom: spacing.md }}>
-          <Text style={styles.cardLabel}>Catastrophe Accumulation by Zone</Text>
+        <View style={{ marginBottom: spacing.md }}>
+          <Text style={styles.sectionLabel}>Catastrophe Accumulation by Zone</Text>
           <View style={styles.accGrid}>
             {accumulation.map((a, idx) => (
-              <View key={idx} style={styles.accItem}>
+              <Card key={idx} style={styles.accCard}>
                 <Text style={styles.accZone}>{a.catZone} · {a.peril}</Text>
                 <Text style={styles.accValue}>{formatCurrency(a._sum.sumInsured)}</Text>
-              </View>
+              </Card>
             ))}
           </View>
-        </Card>
+        </View>
       )}
 
       <Card>
@@ -193,9 +193,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.md },
   error: { color: colors.danger, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
+  sectionLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   accGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  accItem: { backgroundColor: colors.surfaceAlt, padding: spacing.md, borderRadius: 10, minWidth: 180 },
+  accCard: { minWidth: 200, maxWidth: 480, flexGrow: 1, flexShrink: 1, flexBasis: 200 },
   accZone: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },
   accValue: { ...typography.h3, color: colors.textPrimary },
   bodyText: { ...typography.body, color: colors.textSecondary, marginBottom: spacing.md },
