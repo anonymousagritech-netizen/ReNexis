@@ -21,8 +21,9 @@ render.yaml Render deployment blueprint for the backend
 
 ## Status
 
-- [x] Backend: full data model, auth/RBAC, audit trail, all 8 modules' APIs, seed data, verified locally against Postgres
-- [x] Frontend: Expo (React Native + Web) app, all 8 modules with full CRUD, deployable to Vercel as a static SPA, verified via local production build
+- [x] Backend: full data model, auth/RBAC, audit trail, all 8 modules' APIs, document management, notifications, catastrophe event linkage, FX auto-revaluation, Solvency II export, retro net-position rollup, seed data — verified locally against Postgres
+- [x] Frontend: Expo (React Native + Web) app, all 8 modules with full CRUD plus document library, notifications bell, exposure heatmap, lifecycle renewals/run-off panels — deployable to Vercel as a static SPA, verified via local production build
 - [ ] Deployment: Neon + Render + Vercel wiring (push DB to Neon, deploy backend to Render, deploy frontend to Vercel)
+- [ ] Production hardening: see "Demo vs. production readiness" note in backend/README.md before going live with real data
 
 See `backend/README.md` and `frontend/README.md` for setup and deployment steps.

@@ -13,7 +13,8 @@ export type RouteKey =
   | 'compliance'
   | 'reporting'
   | 'lifecycle'
-  | 'audit';
+  | 'audit'
+  | 'documents';
 
 export interface RouteDef {
   key: RouteKey;
@@ -40,6 +41,7 @@ export const ROUTES: RouteDef[] = [
   { key: 'reporting', label: 'Reports & Analytics', icon: '▣', group: '8 · Reporting', roles: 'ALL' },
   { key: 'lifecycle', label: 'Product Lifecycle', icon: '↻', group: '9 · Lifecycle', roles: ['ADMIN', 'UNDERWRITER', 'AUDITOR', 'VIEWER'] },
   { key: 'audit', label: 'Audit Trail', icon: '⌘', group: '1 · System', roles: ['ADMIN', 'AUDITOR', 'COMPLIANCE'] },
+  { key: 'documents', label: 'Document Library', icon: '▧', group: '1 · System', roles: 'ALL' },
 ];
 
 export function getVisibleRoutes(role: UserRole): RouteDef[] {

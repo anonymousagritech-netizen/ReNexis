@@ -203,4 +203,12 @@ router.get('/fx-rates', validateQuery(z.object({ baseCurrency: z.string().option
   res.json({ rates });
 });
 
+// Manually trigger period-end FX revaluation (also runs automatically nightly via scheduler)
+router.post('/fx-rates/run-revaluation', requireRole('ADMIN', 'ACCOUNTS'), async (req: Request, res: Response) => {
+  const { runFxRevaluationJob } = await import('@/jobs/scheduler');
+  const revaluedCount = await runFxRevaluationJob();
+  await writeAudit({ req, action: 'CREATE', entityName: 'FxRevaluation', recordId: 'batch', afterData: { revaluedCount } });
+  res.json({ revaluedCount });
+});
+
 export default router;

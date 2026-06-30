@@ -97,6 +97,45 @@ router.get('/reports/schedule-f/data', validateQuery(z.object({ entityId: z.stri
   res.json({ scheduleF: rows });
 });
 
+/**
+ * Solvency II QRT-style data extract — a simplified capital-adequacy reporting view:
+ * technical provisions (reserves), premium volume, and investment asset breakdown
+ * for a given entity/period, structured similarly to the EIOPA Quantitative Reporting
+ * Template categories (this is a simplified data extract, not a certified QRT filing).
+ */
+router.get('/reports/solvency-ii/data', validateQuery(z.object({ entityId: z.string().uuid(), periodStart: z.coerce.date(), periodEnd: z.coerce.date() })), async (req: Request, res: Response) => {
+  const { entityId, periodStart, periodEnd } = req.query as any;
+
+  const [premiums, claims, investments] = await Promise.all([
+    prisma.premiumTransaction.aggregate({
+      where: { contract: { entityId }, transactionDate: { gte: periodStart, lte: periodEnd } },
+      _sum: { grossPremium: true, netPremium: true },
+    }),
+    prisma.claim.aggregate({
+      where: { contract: { entityId }, dateNotified: { gte: periodStart, lte: periodEnd } },
+      _sum: { reserveAmount: true, paidAmount: true },
+    }),
+    prisma.investment.groupBy({ by: ['assetClass'], _sum: { marketValue: true }, where: { isActive: true } }),
+  ]);
+
+  const totalAssets = investments.reduce((s, i) => s + Number(i._sum.marketValue || 0), 0);
+  const technicalProvisions = Number(claims._sum.reserveAmount || 0);
+  const ownFunds = totalAssets - technicalProvisions;
+
+  res.json({
+    solvencyII: {
+      premiumWritten: Number(premiums._sum.grossPremium || 0),
+      premiumNetOfReinsurance: Number(premiums._sum.netPremium || 0),
+      technicalProvisions,
+      claimsPaid: Number(claims._sum.paidAmount || 0),
+      totalInvestmentAssets: totalAssets,
+      assetBreakdown: investments.map((i) => ({ assetClass: i.assetClass, marketValue: Number(i._sum.marketValue || 0) })),
+      estimatedOwnFunds: ownFunds,
+      solvencyRatioIndicative: technicalProvisions > 0 ? Math.round((ownFunds / technicalProvisions) * 10000) / 100 : null,
+    },
+  });
+});
+
 // ---- IFRS17 CSM tracking ----
 
 const csmSchema = z.object({

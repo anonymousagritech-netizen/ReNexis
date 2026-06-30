@@ -21,6 +21,9 @@ import lifecycleRoutes from '@/modules/lifecycle/lifecycle.routes';
 import entityRoutes from '@/modules/entities/entity.routes';
 import auditRoutes from '@/modules/audit/audit.routes';
 import dashboardRoutes from '@/modules/dashboard/dashboard.routes';
+import documentRoutes from '@/modules/documents/document.routes';
+import notificationRoutes from '@/modules/notifications/notification.routes';
+import catastropheRoutes from '@/modules/catastrophe/catastrophe.routes';
 
 export function createApp() {
   const app = express();
@@ -58,6 +61,9 @@ export function createApp() {
   app.use('/api/lifecycle', lifecycleRoutes);
   app.use('/api/audit', auditRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/documents', documentRoutes);
+  app.use('/api/notifications', notificationRoutes);
+  app.use('/api/catastrophe-events', catastropheRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

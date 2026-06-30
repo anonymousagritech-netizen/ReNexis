@@ -31,6 +31,11 @@ export async function getScheduleFData(entityId: string, periodStart: string, pe
   return data.scheduleF;
 }
 
+export async function getSolvencyIIData(entityId: string, periodStart: string, periodEnd: string) {
+  const { data } = await api.get('/compliance/reports/solvency-ii/data', { params: { entityId, periodStart, periodEnd } });
+  return data.solvencyII;
+}
+
 export async function listCSMRecords(contractId?: string) {
   const { data } = await api.get('/compliance/csm', { params: { contractId } });
   return data.csmRecords;

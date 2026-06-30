@@ -7,9 +7,11 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
+import { DocumentsPanel } from '@/components/DocumentsPanel';
 import { colors, spacing, typography } from '@/theme/theme';
 import { listClaims, createClaim, adjustReserve, recordPayment, requestCashCall } from '@/api/claims.api';
 import { listContracts } from '@/api/contracts.api';
+import { listCatastropheEvents, createCatastropheEvent } from '@/api/catastrophe.api';
 import { Claim, Contract } from '@/types/models';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { getApiErrorMessage } from '@/api/client';
@@ -63,9 +65,12 @@ export function ClaimsScreen({ params }: { params?: Record<string, any> }) {
 
 function ClaimCreateModal({ visible, onClose, onCreated }: { visible: boolean; onClose: () => void; onCreated: () => void }) {
   const [contracts, setContracts] = useState<Contract[]>([]);
-  const [form, setForm] = useState({ contractId: '', dateOfLoss: new Date().toISOString().slice(0, 10), grossIncurred: '', currency: 'USD', description: '' });
+  const [catEvents, setCatEvents] = useState<any[]>([]);
+  const [form, setForm] = useState({ contractId: '', dateOfLoss: new Date().toISOString().slice(0, 10), grossIncurred: '', currency: 'USD', description: '', catastropheEventId: '' });
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [newEventMode, setNewEventMode] = useState(false);
+  const [newEvent, setNewEvent] = useState({ name: '', peril: '', zone: '' });
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   useEffect(() => {
@@ -74,7 +79,17 @@ function ClaimCreateModal({ visible, onClose, onCreated }: { visible: boolean; o
       setContracts(res.contracts);
       setForm((f) => ({ ...f, contractId: res.contracts[0]?.id || '' }));
     });
+    listCatastropheEvents().then(setCatEvents);
   }, [visible]);
+
+  const handleCreateEvent = async () => {
+    if (!newEvent.name || !newEvent.peril) return;
+    const event = await createCatastropheEvent({ ...newEvent, eventDate: form.dateOfLoss });
+    setCatEvents((evts) => [event, ...evts]);
+    update('catastropheEventId', event.id);
+    setNewEventMode(false);
+    setNewEvent({ name: '', peril: '', zone: '' });
+  };
 
   const submit = async () => {
     if (!form.contractId || !form.grossIncurred) {
@@ -84,7 +99,9 @@ function ClaimCreateModal({ visible, onClose, onCreated }: { visible: boolean; o
     setSaving(true);
     setError(null);
     try {
-      await createClaim({ ...form, grossIncurred: Number(form.grossIncurred) });
+      const payload: any = { ...form };
+      if (!payload.catastropheEventId) delete payload.catastropheEventId;
+      await createClaim({ ...payload, grossIncurred: Number(form.grossIncurred) });
       onCreated();
     } catch (e) {
       setError(getApiErrorMessage(e));
@@ -109,6 +126,31 @@ function ClaimCreateModal({ visible, onClose, onCreated }: { visible: boolean; o
       <FormField label="Description">
         <Input value={form.description} onChangeText={(v) => update('description', v)} multiline placeholder="Loss details, location, cause..." />
       </FormField>
+
+      <FormField label="Catastrophe Event (optional — groups losses from the same event)">
+        {newEventMode ? (
+          <View>
+            <View style={styles.row}>
+              <Input value={newEvent.name} onChangeText={(v) => setNewEvent((e) => ({ ...e, name: v }))} placeholder="Event name e.g. Hurricane Marigold" />
+              <Input value={newEvent.peril} onChangeText={(v) => setNewEvent((e) => ({ ...e, peril: v }))} placeholder="Peril e.g. WINDSTORM" />
+            </View>
+            <View style={[styles.row, { marginTop: spacing.sm }]}>
+              <Button label="Cancel" variant="secondary" small onPress={() => setNewEventMode(false)} />
+              <Button label="Create Event" small onPress={handleCreateEvent} />
+            </View>
+          </View>
+        ) : (
+          <View>
+            <SelectField
+              value={form.catastropheEventId}
+              options={[{ label: 'None', value: '' }, ...catEvents.map((e) => ({ label: `${e.name} (${e.peril})`, value: e.id }))]}
+              onChange={(v) => update('catastropheEventId', v)}
+            />
+            <Button label="+ New Catastrophe Event" variant="ghost" small onPress={() => setNewEventMode(true)} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} />
+          </View>
+        )}
+      </FormField>
+
       <Text style={styles.hint}>Layer recovery is calculated automatically per the treaty's retention/limit terms on submission.</Text>
       <View style={styles.actions}>
         <Button label="Cancel" variant="secondary" onPress={onClose} />
@@ -210,6 +252,10 @@ function ClaimDetailModal({ claim, onClose, onChanged }: { claim: Claim | null; 
           <Button label="Request" small variant="secondary" onPress={handleCashCall} loading={saving} disabled={!cashCallInput} />
         </View>
         {claim.cashCallStatus ? <Text style={styles.hint}>Current cash call status: {claim.cashCallStatus}</Text> : null}
+      </View>
+
+      <View style={styles.section}>
+        <DocumentsPanel claimId={claim.id} />
       </View>
     </Modal>
   );

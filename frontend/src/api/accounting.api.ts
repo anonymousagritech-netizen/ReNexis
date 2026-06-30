@@ -50,3 +50,8 @@ export async function createFxRate(payload: Record<string, any>) {
   const { data } = await api.post('/accounting/fx-rates', payload);
   return data.fxRate;
 }
+
+export async function runFxRevaluation() {
+  const { data } = await api.post('/accounting/fx-rates/run-revaluation');
+  return data as { revaluedCount: number };
+}

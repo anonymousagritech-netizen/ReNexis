@@ -97,6 +97,31 @@ router.get('/top-counterparties', validateQuery(z.object({ limit: z.coerce.numbe
   res.json({ topCounterparties: sorted });
 });
 
+// Retrocession net position: nets outward-ceded exposure against retro recoveries
+// so management can see true risk retained after all layers of protection.
+router.get('/retro-net-position', validateQuery(z.object({ entityId: z.string().uuid().optional() })), async (req: Request, res: Response) => {
+  const entityIdParam = req.query.entityId as string | undefined;
+  const where: any = { isRetrocession: false, direction: 'INWARD' };
+  if (entityIdParam) where.entityId = entityIdParam;
+
+  const inwardContracts = await prisma.contract.findMany({ where, include: { claims: true } });
+  const retroWhere: any = { isRetrocession: true };
+  if (entityIdParam) retroWhere.entityId = entityIdParam;
+  const retroContracts = await prisma.contract.findMany({ where: retroWhere, include: { claims: true } });
+
+  const grossAssumedIncurred = inwardContracts.reduce((s, c) => s + c.claims.reduce((s2: number, cl: any) => s2 + Number(cl.grossIncurred), 0), 0);
+  const retroRecovered = retroContracts.reduce((s, c) => s + c.claims.reduce((s2: number, cl: any) => s2 + Number(cl.recoveryAmount), 0), 0);
+  const netRetainedPosition = grossAssumedIncurred - retroRecovered;
+
+  res.json({
+    grossAssumedIncurred,
+    retroRecovered,
+    netRetainedPosition,
+    inwardContractCount: inwardContracts.length,
+    retroContractCount: retroContracts.length,
+  });
+});
+
 // Catastrophe accumulation heatmap data
 router.get('/exposure-heatmap', async (_req: Request, res: Response) => {
   const risks = await prisma.risk.findMany({ where: { latitude: { not: null }, longitude: { not: null } }, select: { latitude: true, longitude: true, sumInsured: true, catZone: true, peril: true } });

@@ -8,7 +8,7 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
 import { colors, spacing, typography } from '@/theme/theme';
-import { listSOA, generateSOA, issueSOA, settleSOA, getAgingReport } from '@/api/accounting.api';
+import { listSOA, generateSOA, issueSOA, settleSOA, getAgingReport, runFxRevaluation } from '@/api/accounting.api';
 import { listContracts } from '@/api/contracts.api';
 import { StatementOfAccount, Contract } from '@/types/models';
 import { formatCurrency, formatDate } from '@/utils/format';
@@ -20,6 +20,19 @@ export function AccountingScreen() {
   const [aging, setAging] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [revaluing, setRevaluing] = useState(false);
+  const [revalueResult, setRevalueResult] = useState<number | null>(null);
+
+  const handleRunRevaluation = async () => {
+    setRevaluing(true);
+    try {
+      const res = await runFxRevaluation();
+      setRevalueResult(res.revaluedCount);
+      await fetchData();
+    } finally {
+      setRevaluing(false);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -62,8 +75,16 @@ export function AccountingScreen() {
       <ScreenHeader
         title="Technical / Business Accounting"
         subtitle="Statement of Account, current account, aging & reconciliation"
-        actions={<Button label="+ Generate SOA" onPress={() => setGenerateOpen(true)} />}
+        actions={
+          <>
+            <Button label={revaluing ? 'Revaluing…' : 'Run FX Revaluation'} variant="secondary" onPress={handleRunRevaluation} loading={revaluing} />
+            <Button label="+ Generate SOA" onPress={() => setGenerateOpen(true)} />
+          </>
+        }
       />
+      {revalueResult !== null && (
+        <Text style={styles.hint}>FX revaluation complete — {revalueResult} open foreign-currency balance{revalueResult === 1 ? '' : 's'} revalued and posted to the ledger.</Text>
+      )}
 
       <View style={styles.tabs}>
         <SelectField

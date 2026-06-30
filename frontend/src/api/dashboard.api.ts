@@ -31,6 +31,11 @@ export async function getExposureHeatmap() {
   return data.points;
 }
 
+export async function getRetroNetPosition(entityId?: string) {
+  const { data } = await api.get('/reporting/retro-net-position', { params: { entityId } });
+  return data as { grossAssumedIncurred: number; retroRecovered: number; netRetainedPosition: number; inwardContractCount: number; retroContractCount: number };
+}
+
 export async function getLifecycleBoard(entityId?: string) {
   const { data } = await api.get('/lifecycle/board', { params: { entityId } });
   return data as { board: Record<string, any[]>; stages: string[] };

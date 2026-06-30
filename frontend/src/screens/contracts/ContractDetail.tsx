@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-nati
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
+import { DocumentsPanel } from '@/components/DocumentsPanel';
 import { colors, radius, spacing, typography } from '@/theme/theme';
 import { getContract, updateContractStatus, renewContract } from '@/api/contracts.api';
 import { Contract, ContractStatus } from '@/types/models';
@@ -137,6 +138,9 @@ export function ContractDetail({ contractId, onBack, onChanged }: { contractId: 
             </View>
           </View>
         ))}
+      </Card>
+      <Card style={{ marginTop: spacing.lg }}>
+        <DocumentsPanel contractId={contract.id} />
       </Card>
     </View>
   );

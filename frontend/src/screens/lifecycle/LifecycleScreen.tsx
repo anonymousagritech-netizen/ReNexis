@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
 import { colors, radius, spacing, typography, getStatusColor } from '@/theme/theme';
-import { getLifecycleBoard } from '@/api/dashboard.api';
+import { getLifecycleBoard, getRenewalsDue, getRunOffWatch } from '@/api/dashboard.api';
+import { formatCurrency } from '@/utils/format';
 import { formatDate, titleCase } from '@/utils/format';
 import { useAppNavigation } from '@/navigation/NavigationContext';
 
@@ -11,12 +12,16 @@ export function LifecycleScreen() {
   const { navigate } = useAppNavigation();
   const [board, setBoard] = useState<Record<string, any[]>>({});
   const [stages, setStages] = useState<string[]>([]);
+  const [renewals, setRenewals] = useState<any[]>([]);
+  const [runOff, setRunOff] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getLifecycleBoard().then((res) => {
-      setBoard(res.board);
-      setStages(res.stages);
+    Promise.all([getLifecycleBoard(), getRenewalsDue(60), getRunOffWatch()]).then(([boardRes, renewalsRes, runOffRes]) => {
+      setBoard(boardRes.board);
+      setStages(boardRes.stages);
+      setRenewals(renewalsRes);
+      setRunOff(runOffRes);
       setLoading(false);
     });
   }, []);
@@ -57,6 +62,42 @@ export function LifecycleScreen() {
           </View>
         </ScrollView>
       )}
+
+      <View style={styles.panelsRow}>
+        <Card style={styles.panel}>
+          <Text style={styles.panelTitle}>Renewals Due (next 60 days)</Text>
+          {renewals.length === 0 ? (
+            <Text style={styles.emptyPanel}>No renewals due soon.</Text>
+          ) : (
+            renewals.map((c: any) => (
+              <Pressable key={c.id} style={styles.panelRow} onPress={() => navigate('contracts', { contractId: c.id })}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.panelRowTitle}>{c.name}</Text>
+                  <Text style={styles.panelRowMeta}>{c.contractNumber}</Text>
+                </View>
+                <Text style={styles.panelRowDate}>{formatDate(c.expiryDate)}</Text>
+              </Pressable>
+            ))
+          )}
+        </Card>
+
+        <Card style={styles.panel}>
+          <Text style={styles.panelTitle}>Run-off Watch (open long-tail claims)</Text>
+          {runOff.length === 0 ? (
+            <Text style={styles.emptyPanel}>No closed/run-off contracts with open claims.</Text>
+          ) : (
+            runOff.map((c: any, idx: number) => (
+              <View key={idx} style={styles.panelRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.panelRowTitle}>{c.name}</Text>
+                  <Text style={styles.panelRowMeta}>{c.contractNumber} · {c.openClaimsCount} open claim{c.openClaimsCount === 1 ? '' : 's'}</Text>
+                </View>
+                <Text style={styles.panelRowDate}>{formatCurrency(c.openClaimsReserve)}</Text>
+              </View>
+            ))
+          )}
+        </Card>
+      </View>
     </View>
   );
 }
@@ -73,4 +114,12 @@ const styles = StyleSheet.create({
   cardItemTitle: { ...typography.small, color: colors.textPrimary, fontWeight: '700', marginBottom: 4 },
   cardItemMeta: { ...typography.caption, color: colors.textMuted },
   emptyCol: { ...typography.small, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.lg },
+  panelsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginTop: spacing.xl },
+  panel: { flex: 1, minWidth: 340 },
+  panelTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.md },
+  panelRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  panelRowTitle: { ...typography.bodyMedium, color: colors.textPrimary },
+  panelRowMeta: { ...typography.small, color: colors.textMuted, marginTop: 2 },
+  panelRowDate: { ...typography.small, color: colors.textSecondary },
+  emptyPanel: { ...typography.body, color: colors.textMuted, paddingVertical: spacing.md },
 });

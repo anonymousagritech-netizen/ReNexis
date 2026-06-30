@@ -65,3 +65,18 @@ All routes are mounted under `/api`. Auth: `Bearer <accessToken>` header, obtain
 - `/api/dashboard/overview` — single aggregated home-screen summary
 
 Every mutating endpoint writes to `audit_logs` with actor, IP, and before/after state.
+
+## Demo vs. production readiness
+
+This is a fully functional demo/pilot system — every module's core workflow is real, tested against a live database, and not mocked. It is **not yet production-ready for handling real money or real regulatory filings** without the following hardening, in priority order:
+
+1. **File storage** — documents currently save to local disk (`/uploads`). This works for local dev and demos but Render's filesystem is ephemeral and wipes on every redeploy. Swap `multer.diskStorage` in `document.routes.ts` for an S3 or Supabase Storage client before any real document needs to survive a deploy.
+2. **MFA** — the `User` model has `mfaEnabled`/`mfaSecret` fields but no actual TOTP enrollment/verification flow is wired up. Login is currently password + JWT only.
+3. **Actuarial calculations** — IBNR reserves are entered manually (no triangulation), and IFRS17 CSM / Solvency II figures are simplified data extracts, not certified actuarial output. Per the blueprint's own guidance, this is intentional — real CSM/IBNR math should come from an actuary or specialist service and land in these tables as the source of truth, not be computed by this app.
+4. **Secrets & environment** — rotate `JWT_SECRET`/`REFRESH_TOKEN_SECRET` to long random values in production (the `.env.example` defaults are not safe to use as-is), and ensure `DATABASE_URL` uses Neon's pooled connection string with SSL.
+5. **Email/SMS delivery** — notifications currently only live inside the app (bell icon). There's no email or SMS dispatch for renewal reminders or cash calls.
+6. **Rate limiting & WAF** — basic rate limiting is in place (`express-rate-limit`), but a production deployment handling real counterparty data should sit behind a proper WAF/CDN (Cloudflare, etc.) and have stricter limits per endpoint.
+7. **Backups & DR** — Neon handles point-in-time recovery, but no automated backup verification or disaster-recovery runbook exists yet.
+8. **Compliance sign-off** — Schedule F and Solvency II exports are structurally correct data extracts but have not been reviewed by a compliance/actuarial professional against your specific jurisdiction's exact filing requirements.
+
+None of these are large efforts individually, but they're the difference between "demo that proves the concept end-to-end" and "system you'd trust with a real cedent's claims data." Treat this as pilot/demo-ready now, production-ready after the above.

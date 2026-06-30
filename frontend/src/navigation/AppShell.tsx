@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { colors } from '@/theme/theme';
+import { colors, spacing } from '@/theme/theme';
 import { Sidebar } from './Sidebar';
 import { useAppNavigation } from './NavigationContext';
+import { NotificationsBell } from '@/components/NotificationsBell';
 
 import { DashboardScreen } from '@/screens/dashboard/DashboardScreen';
 import { ContractsScreen } from '@/screens/contracts/ContractsScreen';
@@ -17,6 +18,7 @@ import { ComplianceScreen } from '@/screens/compliance/ComplianceScreen';
 import { ReportingScreen } from '@/screens/reporting/ReportingScreen';
 import { LifecycleScreen } from '@/screens/lifecycle/LifecycleScreen';
 import { AuditScreen } from '@/screens/audit/AuditScreen';
+import { DocumentLibraryScreen } from '@/screens/documents/DocumentLibraryScreen';
 
 export function AppShell() {
   const { current } = useAppNavigation();
@@ -24,9 +26,14 @@ export function AppShell() {
   return (
     <View style={styles.root}>
       <Sidebar />
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>
-        {renderScreen(current.route, current.params)}
-      </ScrollView>
+      <View style={styles.mainCol}>
+        <View style={styles.topBar}>
+          <NotificationsBell />
+        </View>
+        <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>
+          {renderScreen(current.route, current.params)}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -59,6 +66,8 @@ function renderScreen(route: string, params?: Record<string, any>) {
       return <LifecycleScreen />;
     case 'audit':
       return <AuditScreen />;
+    case 'documents':
+      return <DocumentLibraryScreen />;
     default:
       return <DashboardScreen />;
   }
@@ -70,6 +79,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.bg,
     height: '100%',
+  },
+  mainCol: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    zIndex: 10,
   },
   content: {
     flex: 1,
