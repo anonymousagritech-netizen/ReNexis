@@ -37,10 +37,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.md,
+    alignItems: 'center',
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.xs,
     marginBottom: spacing.xs,
   },
@@ -60,14 +62,17 @@ const styles = StyleSheet.create({
     ...typography.small,
     color: colors.textSecondary,
     flexShrink: 1,
+    textAlign: 'center',
   },
   value: {
     fontSize: 24,
     fontWeight: '700',
+    textAlign: 'center',
   },
   subtext: {
     ...typography.caption,
     color: colors.textMuted,
     marginTop: 2,
+    textAlign: 'center',
   },
 });

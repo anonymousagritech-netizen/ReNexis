@@ -195,8 +195,8 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
   sectionLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   accGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  accCard: { minWidth: 200, maxWidth: 480, flexGrow: 1, flexShrink: 1, flexBasis: 200 },
-  accZone: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },
-  accValue: { ...typography.h3, color: colors.textPrimary },
+  accCard: { minWidth: 200, maxWidth: 480, flexGrow: 1, flexShrink: 1, flexBasis: 200, alignItems: 'center' },
+  accZone: { ...typography.small, color: colors.textSecondary, marginBottom: 4, textAlign: 'center' },
+  accValue: { ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
   bodyText: { ...typography.body, color: colors.textSecondary, marginBottom: spacing.md },
 });
