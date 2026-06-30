@@ -57,13 +57,13 @@ export function ReportingScreen() {
         </View>
       )}
 
-      <Card style={{ marginBottom: spacing.lg }}>
+      <Card style={{ marginBottom: spacing.md }}>
         <Text style={styles.cardLabel}>Treaty Performance</Text>
         <DataTable columns={columns} data={performance} loading={loading} emptyMessage="No performance data yet." />
       </Card>
 
       {retroPosition && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Retrocession Net Position</Text>
           <Text style={styles.muted}>
             Gross assumed incurred, net of retro recoveries — the true risk retained after all layers of protection.
@@ -77,7 +77,7 @@ export function ReportingScreen() {
       )}
 
       {heatmapPoints.length > 0 && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Catastrophe Exposure by Zone</Text>
           <ExposureHeatmap points={heatmapPoints} />
         </Card>
@@ -135,7 +135,7 @@ function ExposureHeatmap({ points }: { points: any[] }) {
 
 const styles = StyleSheet.create({
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.md },
+  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
   rowText: { ...typography.bodyMedium, color: colors.textPrimary },
   rowValue: { ...typography.bodyMedium, color: colors.textPrimary },

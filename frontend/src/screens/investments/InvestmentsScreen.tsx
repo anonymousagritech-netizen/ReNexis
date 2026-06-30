@@ -67,7 +67,7 @@ export function InvestmentsScreen() {
       />
 
       {summary && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Asset Allocation ({formatCurrency(summary.totalMarketValue)} total)</Text>
           <View style={styles.allocGrid}>
             {summary.allocation.map((a) => (
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.md },
   error: { color: colors.danger, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.md },
+  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   allocGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg },
   allocItem: { minWidth: 200, flexGrow: 1 },
   allocClass: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },

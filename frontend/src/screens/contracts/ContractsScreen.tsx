@@ -76,7 +76,7 @@ export function ContractsScreen({ params }: { params?: Record<string, any> }) {
         actions={<Button label="+ New Contract" onPress={() => setCreateOpen(true)} />}
       />
 
-      <Card style={{ marginBottom: spacing.lg }}>
+      <Card style={{ marginBottom: spacing.md }}>
         <View style={styles.filters}>
           <View style={styles.filterGroup}>
             <Text style={styles.filterLabel}>Direction</Text>

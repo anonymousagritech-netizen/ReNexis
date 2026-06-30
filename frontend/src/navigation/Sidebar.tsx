@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { colors, radius, spacing, typography, moduleColors } from '@/theme/theme';
 import { getVisibleRoutes, RouteKey, RouteDef } from './routes';
 import { useAppNavigation } from './NavigationContext';
@@ -25,7 +25,7 @@ export function Sidebar() {
     <View style={styles.sidebar}>
       <View style={styles.brand}>
         <View style={styles.brandMark}>
-          <Text style={styles.brandMarkText}>R</Text>
+          <Image source={require('../../assets/logo-icon.png')} style={styles.brandMarkImage} resizeMode="contain" />
         </View>
         <View>
           <Text style={styles.brandName}>ReNexis</Text>
@@ -106,17 +106,19 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   brandMark: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
     borderRadius: radius.md,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
-  brandMarkText: {
-    color: colors.white,
-    fontWeight: '800',
-    fontSize: 18,
+  brandMarkImage: {
+    width: 30,
+    height: 30,
   },
   brandName: {
     ...typography.h3,

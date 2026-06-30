@@ -89,14 +89,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
     zIndex: 10,
   },
   content: {
     flex: 1,
   },
   contentInner: {
-    padding: 32,
+    padding: spacing.xl,
+    paddingTop: spacing.md,
     maxWidth: 1280,
     width: '100%',
   },

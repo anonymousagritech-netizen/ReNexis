@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { colors, radius, spacing, typography } from '@/theme/theme';
 import { Input, FormField } from '@/components/FormField';
 import { Button } from '@/components/Button';
@@ -39,10 +39,7 @@ export function LoginScreen() {
   return (
     <View style={styles.root}>
       <View style={styles.panel}>
-        <View style={styles.brandMark}>
-          <Text style={styles.brandMarkText}>R</Text>
-        </View>
-        <Text style={styles.title}>ReNexis</Text>
+        <Image source={require('../../../assets/logo-wordmark.png')} style={styles.wordmark} resizeMode="contain" />
         <Text style={styles.subtitle}>Reinsurance Operations Platform</Text>
 
         <View style={styles.form}>
@@ -98,23 +95,10 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     alignItems: 'center',
   },
-  brandMark: {
-    width: 52,
-    height: 52,
-    borderRadius: radius.lg,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  brandMarkText: {
-    color: colors.white,
-    fontWeight: '800',
-    fontSize: 26,
-  },
-  title: {
-    ...typography.h1,
-    color: colors.textPrimary,
+  wordmark: {
+    width: 260,
+    height: 70,
+    marginBottom: spacing.sm,
   },
   subtitle: {
     ...typography.body,

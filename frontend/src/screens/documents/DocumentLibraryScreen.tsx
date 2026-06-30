@@ -92,7 +92,7 @@ export function DocumentLibraryScreen() {
         }
       />
 
-      <Card style={{ marginBottom: spacing.lg }}>
+      <Card style={{ marginBottom: spacing.md }}>
         <Text style={styles.filterLabel}>Category</Text>
         <SelectField value={category} options={CATEGORY_OPTIONS} onChange={setCategory} />
       </Card>

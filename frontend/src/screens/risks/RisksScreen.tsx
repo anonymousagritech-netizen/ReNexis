@@ -74,7 +74,7 @@ export function RisksScreen() {
       />
 
       {accumulation.length > 0 && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Catastrophe Accumulation by Zone</Text>
           <View style={styles.accGrid}>
             {accumulation.map((a, idx) => (
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.md },
   error: { color: colors.danger, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.md },
+  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   accGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   accItem: { backgroundColor: colors.surfaceAlt, padding: spacing.md, borderRadius: 10, minWidth: 180 },
   accZone: { ...typography.small, color: colors.textSecondary, marginBottom: 4 },

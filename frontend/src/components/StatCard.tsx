@@ -15,10 +15,12 @@ export function StatCard({
 }) {
   return (
     <View style={[styles.card, { backgroundColor: `${accentColor}14`, borderColor: `${accentColor}40` }]}>
-      <View style={[styles.iconChip, { backgroundColor: `${accentColor}26` }]}>
-        <View style={[styles.iconDot, { backgroundColor: accentColor }]} />
+      <View style={styles.topRow}>
+        <View style={[styles.iconChip, { backgroundColor: `${accentColor}26` }]}>
+          <View style={[styles.iconDot, { backgroundColor: accentColor }]} />
+        </View>
+        <Text style={styles.label} numberOfLines={1}>{label}</Text>
       </View>
-      <Text style={styles.label}>{label}</Text>
       <Text style={[styles.value, { color: accentColor }]}>{value}</Text>
       {subtext ? <Text style={styles.subtext}>{subtext}</Text> : null}
     </View>
@@ -27,37 +29,44 @@ export function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    minWidth: 200,
-    flexGrow: 1,
-    flexBasis: 200,
+    minWidth: 180,
+    maxWidth: 240,
+    flexGrow: 0,
+    flexBasis: 180,
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing.lg,
+    padding: spacing.md,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
   },
   iconChip: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.md,
+    width: 22,
+    height: 22,
+    borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
   },
   iconDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
   },
   label: {
     ...typography.small,
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    flexShrink: 1,
   },
   value: {
-    ...typography.h1,
+    fontSize: 24,
+    fontWeight: '700',
   },
   subtext: {
-    ...typography.small,
+    ...typography.caption,
     color: colors.textMuted,
-    marginTop: spacing.xs,
+    marginTop: 2,
   },
 });

@@ -77,7 +77,7 @@ export function ComplianceScreen() {
       </View>
 
       {dashboard.highRiskParties.length > 0 && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>High AML Risk Counterparties</Text>
           {dashboard.highRiskParties.map((p: any) => (
             <View key={p.id} style={styles.row}>
@@ -88,7 +88,7 @@ export function ComplianceScreen() {
         </Card>
       )}
 
-      <Card style={{ marginBottom: spacing.lg }}>
+      <Card style={{ marginBottom: spacing.md }}>
         <View style={styles.cardHeaderRow}>
           <Text style={styles.cardLabel}>Solvency II — Capital Adequacy Snapshot</Text>
           <Button label="Refresh Snapshot" small variant="secondary" onPress={handleViewSolvencyII} loading={solvencyLoading} />
@@ -144,7 +144,7 @@ function SolvencyStat({ label, value, color }: { label: string; value: string; c
 
 const styles = StyleSheet.create({
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.md },
+  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   cardHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
   rowText: { ...typography.bodyMedium, color: colors.textPrimary },

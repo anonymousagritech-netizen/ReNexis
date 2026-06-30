@@ -67,13 +67,13 @@ export function GLScreen() {
       />
 
       {entities.length > 0 && (
-        <Card style={{ marginBottom: spacing.lg }}>
+        <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Entity</Text>
           <SelectField value={entityId} options={entities.map((e) => ({ label: e.name, value: e.id }))} onChange={setEntityId} />
         </Card>
       )}
 
-      <View style={{ marginBottom: spacing.lg }}>
+      <View style={{ marginBottom: spacing.md }}>
         <SelectField
           value={tab}
           options={[{ label: 'Chart of Accounts', value: 'accounts' }, { label: 'Trial Balance', value: 'trial-balance' }]}

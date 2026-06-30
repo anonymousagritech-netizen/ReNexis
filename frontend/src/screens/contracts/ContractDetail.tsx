@@ -76,7 +76,7 @@ export function ContractDetail({ contractId, onBack, onChanged }: { contractId: 
 
   return (
     <View>
-      <Pressable onPress={onBack} style={{ marginBottom: spacing.lg }}>
+      <Pressable onPress={onBack} style={{ marginBottom: spacing.md }}>
         <Text style={styles.backLink}>← Back to contracts</Text>
       </Pressable>
 
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   actionsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl, flexWrap: 'wrap' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg },
   gridCard: { flex: 1, minWidth: 260 },
-  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.md },
+  cardLabel: { ...typography.caption, color: colors.textMuted, textTransform: 'uppercase', marginBottom: spacing.sm },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 7, borderTopWidth: 1, borderTopColor: colors.border },
   detailLabel: { ...typography.small, color: colors.textSecondary },
   detailValue: { ...typography.bodyMedium, color: colors.textPrimary },
