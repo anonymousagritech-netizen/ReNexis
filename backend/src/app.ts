@@ -24,6 +24,7 @@ import dashboardRoutes from '@/modules/dashboard/dashboard.routes';
 import documentRoutes from '@/modules/documents/document.routes';
 import notificationRoutes from '@/modules/notifications/notification.routes';
 import catastropheRoutes from '@/modules/catastrophe/catastrophe.routes';
+import adminRoutes from '@/modules/admin/admin.routes';
 
 export function createApp() {
   const app = express();
@@ -64,6 +65,7 @@ export function createApp() {
   app.use('/api/documents', documentRoutes);
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/catastrophe-events', catastropheRoutes);
+  app.use('/api/admin', adminRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
