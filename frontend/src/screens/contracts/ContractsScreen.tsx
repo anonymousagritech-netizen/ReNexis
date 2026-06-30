@@ -6,7 +6,7 @@ import { DataTable, Column } from '@/components/DataTable';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listContracts } from '@/api/contracts.api';
 import { Contract } from '@/types/models';
 import { formatCurrency, formatDate } from '@/utils/format';
@@ -71,8 +71,7 @@ export function ContractsScreen({ params }: { params?: Record<string, any> }) {
 
   return (
     <View>
-      <ScreenHeader
-        title="Treaty & Facultative Contracts"
+      <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Treaty & Facultative Contracts"
         subtitle="Module 2 · Reinsurance — inward and outward contract management"
         actions={<Button label="+ New Contract" onPress={() => setCreateOpen(true)} />}
       />

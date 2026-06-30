@@ -4,7 +4,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
 import { DataTable, Column } from '@/components/DataTable';
 import { Badge } from '@/components/Badge';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listAuditLogs } from '@/api/dashboard.api';
 import { AuditLog } from '@/types/models';
 
@@ -36,7 +36,7 @@ export function AuditScreen() {
 
   return (
     <View>
-      <ScreenHeader title="Audit Trail" subtitle="Module 1 · Immutable record of every mutation — actor, action, before/after state" />
+      <ScreenHeader accentColor={moduleColors.system.main} title="Audit Trail" subtitle="Module 1 · Immutable record of every mutation — actor, action, before/after state" />
       <Card>
         <DataTable columns={columns} data={logs} loading={loading} emptyMessage="No audit events recorded yet." />
       </Card>

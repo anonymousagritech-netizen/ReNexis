@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card } from './Card';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, radius, spacing, typography } from '@/theme/theme';
 
 export function StatCard({
   label,
@@ -15,12 +14,14 @@ export function StatCard({
   subtext?: string;
 }) {
   return (
-    <Card style={styles.card}>
-      <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+    <View style={[styles.card, { backgroundColor: `${accentColor}14`, borderColor: `${accentColor}40` }]}>
+      <View style={[styles.iconChip, { backgroundColor: `${accentColor}26` }]}>
+        <View style={[styles.iconDot, { backgroundColor: accentColor }]} />
+      </View>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, { color: accentColor }]}>{value}</Text>
       {subtext ? <Text style={styles.subtext}>{subtext}</Text> : null}
-    </Card>
+    </View>
   );
 }
 
@@ -29,15 +30,22 @@ const styles = StyleSheet.create({
     minWidth: 200,
     flexGrow: 1,
     flexBasis: 200,
-    position: 'relative',
-    overflow: 'hidden',
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing.lg,
   },
-  accentBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
+  iconChip: {
+    width: 30,
+    height: 30,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+  },
+  iconDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   label: {
     ...typography.small,
@@ -46,7 +54,6 @@ const styles = StyleSheet.create({
   },
   value: {
     ...typography.h1,
-    color: colors.textPrimary,
   },
   subtext: {
     ...typography.small,

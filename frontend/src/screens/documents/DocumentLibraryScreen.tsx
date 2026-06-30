@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
 import { DataTable, Column } from '@/components/DataTable';
-import { colors, radius, spacing, typography } from '@/theme/theme';
+import { colors, radius, spacing, typography, moduleColors } from '@/theme/theme';
 import { listDocuments, uploadDocument, getDocumentDownloadUrl } from '@/api/documents.api';
 import { formatDate } from '@/utils/format';
 import { SelectField } from '@/components/FormField';
@@ -70,8 +70,7 @@ export function DocumentLibraryScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Document Library"
+      <ScreenHeader accentColor={moduleColors.system.main}         title="Document Library"
         subtitle="Module 1 · Treaty wordings, slips, bordereaux files, claims documents — all linked to their parent record"
         actions={
           Platform.OS === 'web' ? (

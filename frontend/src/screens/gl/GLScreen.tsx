@@ -6,7 +6,7 @@ import { DataTable, Column } from '@/components/DataTable';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listGLAccounts, createGLAccount, getTrialBalance } from '@/api/gl.api';
 import { entitiesApi } from '@/api/parties.api';
 import { GLAccount, Entity } from '@/types/models';
@@ -61,8 +61,7 @@ export function GLScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="General Ledger"
+      <ScreenHeader accentColor={moduleColors.generalAccounting.main}         title="General Ledger"
         subtitle="Module 6 · Chart of accounts, double-entry journal, trial balance"
         actions={<Button label="+ New Account" onPress={() => setCreateOpen(true)} />}
       />

@@ -8,7 +8,7 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
 import { DocumentsPanel } from '@/components/DocumentsPanel';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listClaims, createClaim, adjustReserve, recordPayment, requestCashCall } from '@/api/claims.api';
 import { listContracts } from '@/api/contracts.api';
 import { listCatastropheEvents, createCatastropheEvent } from '@/api/catastrophe.api';
@@ -48,8 +48,7 @@ export function ClaimsScreen({ params }: { params?: Record<string, any> }) {
 
   return (
     <View>
-      <ScreenHeader
-        title="Claims & Recoveries"
+      <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Claims & Recoveries"
         subtitle="RBNS / IBNR reserves, layer recoveries, cash calls"
         actions={<Button label="+ Notify Claim" onPress={() => setCreateOpen(true)} />}
       />

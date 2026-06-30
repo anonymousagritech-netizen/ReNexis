@@ -7,7 +7,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { investmentsApi, getPortfolioSummary, addValuation } from '@/api/investments.api';
 import { Investment } from '@/types/models';
 import { formatCurrency, formatPercent } from '@/utils/format';
@@ -61,8 +61,7 @@ export function InvestmentsScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Investment Portfolio"
+      <ScreenHeader accentColor={moduleColors.investment.main}         title="Investment Portfolio"
         subtitle="Module 4 · Asset allocation, income, valuation, ALM"
         actions={<Button label="+ Add Holding" onPress={() => setCreateOpen(true)} />}
       />

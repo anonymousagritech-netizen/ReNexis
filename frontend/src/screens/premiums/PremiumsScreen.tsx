@@ -7,7 +7,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listPremiums, createPremium, uploadBordereaux } from '@/api/premiums.api';
 import { listContracts } from '@/api/contracts.api';
 import { PremiumTransaction, Contract } from '@/types/models';
@@ -46,8 +46,7 @@ export function PremiumsScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Premiums & Bordereaux"
+      <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Premiums & Bordereaux"
         subtitle="Premium booking and cedent bordereaux ingestion"
         actions={
           <>

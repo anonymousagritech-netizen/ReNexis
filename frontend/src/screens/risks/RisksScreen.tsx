@@ -7,7 +7,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listRisks, createRisk, getAccumulationByZone, decideSpecialAcceptance } from '@/api/risks.api';
 import { listContracts } from '@/api/contracts.api';
 import { Risk, Contract } from '@/types/models';
@@ -68,8 +68,7 @@ export function RisksScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Risks & Underwriting"
+      <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Risks & Underwriting"
         subtitle="Risk capture, treaty capacity allocation, catastrophe accumulation"
         actions={<Button label="+ Capture Risk" onPress={() => setCreateOpen(true)} />}
       />

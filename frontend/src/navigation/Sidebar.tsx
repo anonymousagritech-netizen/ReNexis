@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { colors, radius, spacing, typography } from '@/theme/theme';
-import { getVisibleRoutes, RouteKey } from './routes';
+import { colors, radius, spacing, typography, moduleColors } from '@/theme/theme';
+import { getVisibleRoutes, RouteKey, RouteDef } from './routes';
 import { useAppNavigation } from './NavigationContext';
 import { useAuth } from '@/auth/AuthContext';
 
@@ -12,7 +12,7 @@ export function Sidebar() {
   const grouped = useMemo(() => {
     if (!user) return [];
     const visible = getVisibleRoutes(user.role);
-    const groups = new Map<string, typeof visible>();
+    const groups = new Map<string, RouteDef[]>();
     for (const r of visible) {
       const arr = groups.get(r.group) || [];
       arr.push(r);
@@ -34,24 +34,37 @@ export function Sidebar() {
       </View>
 
       <ScrollView style={styles.menu} showsVerticalScrollIndicator={false}>
-        {grouped.map(([group, items]) => (
-          <View key={group} style={styles.group}>
-            <Text style={styles.groupLabel}>{group}</Text>
-            {items.map((item) => {
-              const active = current.route === item.key;
-              return (
-                <Pressable
-                  key={item.key}
-                  onPress={() => navigate(item.key as RouteKey)}
-                  style={[styles.item, active && styles.itemActive]}
-                >
-                  <Text style={[styles.itemIcon, active && styles.itemIconActive]}>{item.icon}</Text>
-                  <Text style={[styles.itemLabel, active && styles.itemLabelActive]}>{item.label}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+        {grouped.map(([group, items]) => {
+          const groupColor = moduleColors[items[0].colorKey].main;
+          return (
+            <View key={group} style={styles.group}>
+              <View style={styles.groupHeaderRow}>
+                <View style={[styles.groupDot, { backgroundColor: groupColor }]} />
+                <Text style={styles.groupLabel}>{group}</Text>
+              </View>
+              <View style={[styles.groupBox, { borderColor: `${groupColor}33` }]}>
+                {items.map((item, idx) => {
+                  const active = current.route === item.key;
+                  return (
+                    <Pressable
+                      key={item.key}
+                      onPress={() => navigate(item.key as RouteKey)}
+                      style={[
+                        styles.item,
+                        idx !== items.length - 1 && styles.itemDivider,
+                        active && { backgroundColor: `${groupColor}22` },
+                      ]}
+                    >
+                      {active && <View style={[styles.activeBar, { backgroundColor: groupColor }]} />}
+                      <Text style={[styles.itemIcon, { color: active ? groupColor : colors.textMuted }]}>{item.icon}</Text>
+                      <Text style={[styles.itemLabel, active && { color: colors.textPrimary, fontWeight: '700' }]}>{item.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          );
+        })}
       </ScrollView>
 
       <View style={styles.footer}>
@@ -79,7 +92,7 @@ export function Sidebar() {
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 248,
+    width: 260,
     backgroundColor: colors.bgElevated,
     borderRightWidth: 1,
     borderRightColor: colors.border,
@@ -120,40 +133,57 @@ const styles = StyleSheet.create({
   group: {
     marginBottom: spacing.lg,
   },
+  groupHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  groupDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
   groupLabel: {
     ...typography.caption,
     color: colors.textMuted,
     textTransform: 'uppercase',
-    paddingHorizontal: spacing.sm,
-    marginBottom: spacing.xs,
+    letterSpacing: 0.6,
+  },
+  groupBox: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 9,
+    paddingVertical: 10,
     paddingHorizontal: spacing.sm,
-    borderRadius: radius.md,
     gap: spacing.sm,
+    position: 'relative',
   },
-  itemActive: {
-    backgroundColor: colors.primarySoft,
+  itemDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  activeBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
   },
   itemIcon: {
     width: 18,
     textAlign: 'center',
-    color: colors.textMuted,
     fontSize: 13,
-  },
-  itemIconActive: {
-    color: colors.primary,
   },
   itemLabel: {
     ...typography.body,
     color: colors.textSecondary,
-  },
-  itemLabelActive: {
-    color: colors.textPrimary,
-    fontWeight: '600',
   },
   footer: {
     borderTopWidth: 1,

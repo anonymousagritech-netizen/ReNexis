@@ -7,7 +7,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { listSOA, generateSOA, issueSOA, settleSOA, getAgingReport, runFxRevaluation } from '@/api/accounting.api';
 import { listContracts } from '@/api/contracts.api';
 import { StatementOfAccount, Contract } from '@/types/models';
@@ -72,8 +72,7 @@ export function AccountingScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Technical / Business Accounting"
+      <ScreenHeader accentColor={moduleColors.accounting.main}         title="Technical / Business Accounting"
         subtitle="Statement of Account, current account, aging & reconciliation"
         actions={
           <>

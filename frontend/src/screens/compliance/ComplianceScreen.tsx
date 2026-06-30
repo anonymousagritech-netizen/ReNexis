@@ -5,7 +5,7 @@ import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { StatCard } from '@/components/StatCard';
 import { Button } from '@/components/Button';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { getComplianceDashboard, listRegulatoryReports, createRegulatoryReport, getSolvencyIIData } from '@/api/compliance.api';
 import { entitiesApi } from '@/api/parties.api';
 import { formatDate, formatCurrency, formatPercent } from '@/utils/format';
@@ -68,7 +68,7 @@ export function ComplianceScreen() {
 
   return (
     <View>
-      <ScreenHeader title="Compliance & Regulatory" subtitle="Module 7 · KYC/AML, Schedule F, IFRS17 CSM tracking" />
+      <ScreenHeader accentColor={moduleColors.compliance.main} title="Compliance & Regulatory" subtitle="Module 7 · KYC/AML, Schedule F, IFRS17 CSM tracking" />
 
       <View style={styles.statGrid}>
         <StatCard label="Pending KYC" value={String(dashboard.pendingKyc)} accentColor={colors.accentAmber} />

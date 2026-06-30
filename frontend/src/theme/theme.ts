@@ -1,3 +1,17 @@
+export const moduleColors = {
+  overview: { main: '#3E7BFA', soft: 'rgba(62,123,250,0.16)', gradient: ['#3E7BFA', '#6F9CFF'] },
+  reinsurance: { main: '#19C2A0', soft: 'rgba(25,194,160,0.16)', gradient: ['#19C2A0', '#4FE0C2'] },
+  accounting: { main: '#F2A93B', soft: 'rgba(242,169,59,0.16)', gradient: ['#F2A93B', '#FFCB6B'] },
+  investment: { main: '#A66BFF', soft: 'rgba(166,107,255,0.16)', gradient: ['#A66BFF', '#C49BFF'] },
+  generalAccounting: { main: '#FF7E54', soft: 'rgba(255,126,84,0.16)', gradient: ['#FF7E54', '#FFA47E'] },
+  compliance: { main: '#F25C84', soft: 'rgba(242,92,132,0.16)', gradient: ['#F25C84', '#FF8FAE'] },
+  reporting: { main: '#2DD4D4', soft: 'rgba(45,212,212,0.16)', gradient: ['#2DD4D4', '#6FF0F0'] },
+  lifecycle: { main: '#E0C341', soft: 'rgba(224,195,65,0.16)', gradient: ['#E0C341', '#F2DC7E'] },
+  system: { main: '#9BACCB', soft: 'rgba(155,172,203,0.16)', gradient: ['#9BACCB', '#C2D0E8'] },
+};
+
+export type ModuleColorKey = keyof typeof moduleColors;
+
 export const colors = {
   bg: '#0B1220',
   bgElevated: '#121B2E',

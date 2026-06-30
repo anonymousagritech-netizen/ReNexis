@@ -4,7 +4,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { StatCard } from '@/components/StatCard';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { useAuth } from '@/auth/AuthContext';
 import { getDashboardOverview, getRenewalsDue, getClaimsAging } from '@/api/dashboard.api';
 import { DashboardOverview } from '@/types/models';
@@ -42,15 +42,15 @@ export function DashboardScreen() {
 
   return (
     <View>
-      <ScreenHeader title={`Welcome back, ${user?.firstName}`} subtitle="Here's what's happening across the book today." />
+      <ScreenHeader accentColor={moduleColors.overview.main} title={`Welcome back, ${user?.firstName}`} subtitle="Here's what's happening across the book today." />
 
       <View style={styles.statGrid}>
-        <StatCard label="In-Force Contracts" value={formatNumber(overview.inForceContracts)} subtext={`${overview.totalContracts} total`} accentColor={colors.primary} />
+        <StatCard label="In-Force Contracts" value={formatNumber(overview.inForceContracts)} subtext={`${overview.totalContracts} total`} accentColor={moduleColors.reinsurance.main} />
         <StatCard label="Open Claims" value={formatNumber(overview.openClaims)} subtext="RBNS / IBNR / Reserved" accentColor={colors.danger} />
-        <StatCard label="Outstanding Reserves" value={formatCurrency(overview.totalReserves)} accentColor={colors.accentAmber} />
-        <StatCard label="Investment Portfolio" value={formatCurrency(overview.totalInvestmentValue)} accentColor={colors.accentTeal} />
-        <StatCard label="Renewals Due (60d)" value={formatNumber(overview.renewalsDueSoon)} accentColor={colors.accentAmber} />
-        <StatCard label="Pending Approvals" value={formatNumber(overview.pendingApprovals)} accentColor={colors.primary} />
+        <StatCard label="Outstanding Reserves" value={formatCurrency(overview.totalReserves)} accentColor={moduleColors.accounting.main} />
+        <StatCard label="Investment Portfolio" value={formatCurrency(overview.totalInvestmentValue)} accentColor={moduleColors.investment.main} />
+        <StatCard label="Renewals Due (60d)" value={formatNumber(overview.renewalsDueSoon)} accentColor={moduleColors.lifecycle.main} />
+        <StatCard label="Pending Approvals" value={formatNumber(overview.pendingApprovals)} accentColor={moduleColors.reporting.main} />
       </View>
 
       <View style={styles.row}>

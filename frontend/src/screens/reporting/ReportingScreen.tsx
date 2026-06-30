@@ -4,7 +4,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
 import { StatCard } from '@/components/StatCard';
 import { DataTable, Column } from '@/components/DataTable';
-import { colors, spacing, typography } from '@/theme/theme';
+import { colors, spacing, typography, moduleColors } from '@/theme/theme';
 import { getTreatyPerformance, getCombinedRatio, getTopCounterparties, getExposureHeatmap, getRetroNetPosition } from '@/api/dashboard.api';
 import { formatCurrency, formatPercent } from '@/utils/format';
 
@@ -47,7 +47,7 @@ export function ReportingScreen() {
 
   return (
     <View>
-      <ScreenHeader title="Reports & Analytics" subtitle="Module 8 · Treaty performance, combined ratio, top counterparties" />
+      <ScreenHeader accentColor={moduleColors.reporting.main} title="Reports & Analytics" subtitle="Module 8 · Treaty performance, combined ratio, top counterparties" />
 
       {combined && (
         <View style={styles.statGrid}>

@@ -7,7 +7,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { FormField, Input, SelectField } from '@/components/FormField';
-import { colors, spacing } from '@/theme/theme';
+import { colors, spacing, moduleColors } from '@/theme/theme';
 import { partiesApi, updatePartyKyc } from '@/api/parties.api';
 import { Party } from '@/types/models';
 import { getApiErrorMessage } from '@/api/client';
@@ -56,8 +56,7 @@ export function PartiesScreen() {
 
   return (
     <View>
-      <ScreenHeader
-        title="Counterparties"
+      <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Counterparties"
         subtitle="Cedents, brokers, reinsurers & retrocessionaires"
         actions={<Button label="+ New Party" onPress={() => setCreateOpen(true)} />}
       />

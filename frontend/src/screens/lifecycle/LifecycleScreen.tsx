@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
-import { colors, radius, spacing, typography, getStatusColor } from '@/theme/theme';
+import { colors, radius, spacing, typography, getStatusColor, moduleColors } from '@/theme/theme';
 import { getLifecycleBoard, getRenewalsDue, getRunOffWatch } from '@/api/dashboard.api';
 import { formatCurrency } from '@/utils/format';
 import { formatDate, titleCase } from '@/utils/format';
@@ -28,7 +28,7 @@ export function LifecycleScreen() {
 
   return (
     <View>
-      <ScreenHeader title="Product Lifecycle" subtitle="Module 9 · Treaty stage workflow: Design → Quoted → Bound → In-Force → Renewal → Run-off → Closed" />
+      <ScreenHeader accentColor={moduleColors.lifecycle.main} title="Product Lifecycle" subtitle="Module 9 · Treaty stage workflow: Design → Quoted → Bound → In-Force → Renewal → Run-off → Closed" />
 
       {loading ? (
         <Text style={{ color: colors.textMuted }}>Loading…</Text>
