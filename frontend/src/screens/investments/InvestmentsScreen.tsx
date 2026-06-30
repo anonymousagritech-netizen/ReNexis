@@ -62,7 +62,7 @@ export function InvestmentsScreen() {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.investment.main}         title="Investment Portfolio"
-        subtitle="Module 4 · Asset allocation, income, valuation, ALM"
+        subtitle="Asset allocation, income, valuation, ALM"
         actions={<Button label="+ Add Holding" onPress={() => setCreateOpen(true)} />}
       />
 

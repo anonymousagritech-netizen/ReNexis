@@ -36,7 +36,7 @@ export function AuditScreen() {
 
   return (
     <View>
-      <ScreenHeader accentColor={moduleColors.system.main} title="Audit Trail" subtitle="Module 1 · Immutable record of every mutation — actor, action, before/after state" />
+      <ScreenHeader accentColor={moduleColors.system.main} title="Audit Trail" subtitle="Immutable record of every mutation — actor, action, before/after state" />
       <Card>
         <DataTable columns={columns} data={logs} loading={loading} emptyMessage="No audit events recorded yet." />
       </Card>

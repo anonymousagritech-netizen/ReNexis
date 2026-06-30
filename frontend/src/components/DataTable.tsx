@@ -39,45 +39,53 @@ export function DataTable<T extends { id: string }>({
   }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-      <View>
-        <View style={styles.headerRow}>
-          {columns.map((col) => (
-            <View key={col.key} style={[styles.cell, { width: col.width || 140 }]}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.outerScroll}>
+      <View style={styles.table}>
+        <View style={[styles.row, styles.headerRow]}>
+          {columns.map((col, idx) => (
+            <View key={col.key} style={[styles.cell, { minWidth: col.width || 140 }, idx !== columns.length - 1 && styles.cellBorder]}>
               <Text style={styles.headerText}>{col.header}</Text>
             </View>
           ))}
         </View>
-        <ScrollView style={styles.body}>
-          {data.map((row, idx) => {
-            const RowWrapper = onRowPress ? Pressable : View;
-            return (
-              <RowWrapper
-                key={row.id}
-                onPress={onRowPress ? () => onRowPress(row) : undefined}
-                style={[styles.row, idx % 2 === 1 && styles.rowAlt, onRowPress && styles.rowPressable] as any}
-              >
-                {columns.map((col) => (
-                  <View key={col.key} style={[styles.cell, { width: col.width || 140 }]}>
-                    {typeof col.render(row) === 'string' || typeof col.render(row) === 'number' ? (
-                      <Text style={styles.cellText} numberOfLines={1}>
-                        {col.render(row)}
-                      </Text>
-                    ) : (
-                      col.render(row)
-                    )}
-                  </View>
-                ))}
-              </RowWrapper>
-            );
-          })}
-        </ScrollView>
+        {data.map((row, rowIdx) => {
+          const RowWrapper = onRowPress ? Pressable : View;
+          return (
+            <RowWrapper
+              key={row.id}
+              onPress={onRowPress ? () => onRowPress(row) : undefined}
+              style={
+                [
+                  styles.row,
+                  rowIdx % 2 === 1 && styles.rowAlt,
+                  rowIdx !== data.length - 1 && styles.rowDivider,
+                  onRowPress && styles.rowPressable,
+                ] as any
+              }
+            >
+              {columns.map((col, idx) => (
+                <View key={col.key} style={[styles.cell, { minWidth: col.width || 140 }, idx !== columns.length - 1 && styles.cellBorder]}>
+                  {typeof col.render(row) === 'string' || typeof col.render(row) === 'number' ? (
+                    <Text style={styles.cellText} numberOfLines={1}>
+                      {col.render(row)}
+                    </Text>
+                  ) : (
+                    col.render(row)
+                  )}
+                </View>
+              ))}
+            </RowWrapper>
+          );
+        })}
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  outerScroll: {
+    width: '100%',
+  },
   centerBox: {
     paddingVertical: spacing.xxl,
     alignItems: 'center',
@@ -87,35 +95,45 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textMuted,
   },
-  headerRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingBottom: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  headerText: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-  },
-  body: {
-    maxHeight: 520,
+  table: {
+    minWidth: '100%',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
-    paddingVertical: 10,
-    borderRadius: radius.sm,
+  },
+  headerRow: {
+    backgroundColor: colors.surfaceAlt,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   rowAlt: {
     backgroundColor: colors.surfaceAlt,
+  },
+  rowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   rowPressable: {
     cursor: 'pointer' as any,
   },
   cell: {
-    paddingHorizontal: spacing.sm,
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
     justifyContent: 'center',
+  },
+  cellBorder: {
+    borderRightWidth: 1,
+    borderRightColor: colors.border,
+  },
+  headerText: {
+    ...typography.caption,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
   },
   cellText: {
     ...typography.body,

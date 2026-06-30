@@ -29,10 +29,10 @@ export function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    minWidth: 180,
-    maxWidth: 240,
-    flexGrow: 0,
-    flexBasis: 180,
+    minWidth: 200,
+    maxWidth: 340,
+    flexGrow: 1,
+    flexBasis: 200,
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.md,

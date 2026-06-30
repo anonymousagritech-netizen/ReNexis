@@ -68,7 +68,7 @@ export function ComplianceScreen() {
 
   return (
     <View>
-      <ScreenHeader accentColor={moduleColors.compliance.main} title="Compliance & Regulatory" subtitle="Module 7 · KYC/AML, Schedule F, IFRS17 CSM tracking" />
+      <ScreenHeader accentColor={moduleColors.compliance.main} title="Compliance & Regulatory" subtitle="KYC/AML, Schedule F, IFRS17 CSM tracking" />
 
       <View style={styles.statGrid}>
         <StatCard label="Pending KYC" value={String(dashboard.pendingKyc)} accentColor={colors.accentAmber} />

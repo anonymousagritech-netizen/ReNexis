@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
   contentInner: {
     padding: spacing.xl,
     paddingTop: spacing.md,
-    maxWidth: 1280,
     width: '100%',
   },
 });

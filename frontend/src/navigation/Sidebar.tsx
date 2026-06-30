@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { colors, radius, spacing, typography, moduleColors } from '@/theme/theme';
 import { getVisibleRoutes, RouteKey, RouteDef } from './routes';
@@ -8,6 +8,7 @@ import { useAuth } from '@/auth/AuthContext';
 export function Sidebar() {
   const { user, logout } = useAuth();
   const { current, navigate } = useAppNavigation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const grouped = useMemo(() => {
     if (!user) return [];
@@ -20,6 +21,29 @@ export function Sidebar() {
     }
     return Array.from(groups.entries());
   }, [user]);
+
+  // Auto-expand whichever group contains the currently active screen.
+  useEffect(() => {
+    const activeGroup = grouped.find(([, items]) => items.some((i) => i.key === current.route));
+    if (activeGroup) {
+      setExpandedGroups((prev) => {
+        if (prev.has(activeGroup[0])) return prev;
+        const next = new Set(prev);
+        next.add(activeGroup[0]);
+        return next;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current.route, grouped.length]);
+
+  const toggleGroup = (group: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(group)) next.delete(group);
+      else next.add(group);
+      return next;
+    });
+  };
 
   return (
     <View style={styles.sidebar}>
@@ -36,32 +60,37 @@ export function Sidebar() {
       <ScrollView style={styles.menu} showsVerticalScrollIndicator={false}>
         {grouped.map(([group, items]) => {
           const groupColor = moduleColors[items[0].colorKey].main;
+          const isExpanded = expandedGroups.has(group);
+          const hasActiveItem = items.some((i) => i.key === current.route);
           return (
             <View key={group} style={styles.group}>
-              <View style={styles.groupHeaderRow}>
+              <Pressable style={styles.groupHeaderRow} onPress={() => toggleGroup(group)}>
                 <View style={[styles.groupDot, { backgroundColor: groupColor }]} />
-                <Text style={styles.groupLabel}>{group}</Text>
-              </View>
-              <View style={[styles.groupBox, { borderColor: `${groupColor}33` }]}>
-                {items.map((item, idx) => {
-                  const active = current.route === item.key;
-                  return (
-                    <Pressable
-                      key={item.key}
-                      onPress={() => navigate(item.key as RouteKey)}
-                      style={[
-                        styles.item,
-                        idx !== items.length - 1 && styles.itemDivider,
-                        active && { backgroundColor: `${groupColor}22` },
-                      ]}
-                    >
-                      {active && <View style={[styles.activeBar, { backgroundColor: groupColor }]} />}
-                      <Text style={[styles.itemIcon, { color: active ? groupColor : colors.textMuted }]}>{item.icon}</Text>
-                      <Text style={[styles.itemLabel, active && { color: colors.textPrimary, fontWeight: '700' }]}>{item.label}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+                <Text style={[styles.groupLabel, hasActiveItem && { color: groupColor }]}>{group}</Text>
+                <Text style={styles.chevron}>{isExpanded ? '\u2212' : '+'}</Text>
+              </Pressable>
+              {isExpanded && (
+                <View style={[styles.groupBox, { borderColor: `${groupColor}33` }]}>
+                  {items.map((item, idx) => {
+                    const active = current.route === item.key;
+                    return (
+                      <Pressable
+                        key={item.key}
+                        onPress={() => navigate(item.key as RouteKey)}
+                        style={[
+                          styles.item,
+                          idx !== items.length - 1 && styles.itemDivider,
+                          active && { backgroundColor: `${groupColor}22` },
+                        ]}
+                      >
+                        {active && <View style={[styles.activeBar, { backgroundColor: groupColor }]} />}
+                        <Text style={[styles.itemIcon, { color: active ? groupColor : colors.textMuted }]}>{item.icon}</Text>
+                        <Text style={[styles.itemLabel, active && { color: colors.textPrimary, fontWeight: '700' }]}>{item.label}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
             </View>
           );
         })}
@@ -133,14 +162,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   group: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm,
   },
   groupHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: spacing.sm,
-    marginBottom: spacing.xs,
+    paddingVertical: 6,
   },
   groupDot: {
     width: 6,
@@ -152,12 +181,21 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
+    flex: 1,
+  },
+  chevron: {
+    ...typography.caption,
+    color: colors.textMuted,
+    fontWeight: '700',
+    width: 12,
+    textAlign: 'center',
   },
   groupBox: {
     borderRadius: radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
     backgroundColor: colors.surface,
+    marginTop: spacing.xs,
   },
   item: {
     flexDirection: 'row',

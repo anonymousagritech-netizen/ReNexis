@@ -28,7 +28,7 @@ export function LifecycleScreen() {
 
   return (
     <View>
-      <ScreenHeader accentColor={moduleColors.lifecycle.main} title="Product Lifecycle" subtitle="Module 9 · Treaty stage workflow: Design → Quoted → Bound → In-Force → Renewal → Run-off → Closed" />
+      <ScreenHeader accentColor={moduleColors.lifecycle.main} title="Product Lifecycle" subtitle="Treaty stage workflow: Design → Quoted → Bound → In-Force → Renewal → Run-off → Closed" />
 
       {loading ? (
         <Text style={{ color: colors.textMuted }}>Loading…</Text>

@@ -71,7 +71,7 @@ export function DocumentLibraryScreen() {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.system.main}         title="Document Library"
-        subtitle="Module 1 · Treaty wordings, slips, bordereaux files, claims documents — all linked to their parent record"
+        subtitle="Treaty wordings, slips, bordereaux files, claims documents — all linked to their parent record"
         actions={
           Platform.OS === 'web' ? (
             <label style={{ cursor: 'pointer' as any }}>

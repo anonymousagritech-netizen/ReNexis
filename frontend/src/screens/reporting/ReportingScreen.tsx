@@ -47,7 +47,7 @@ export function ReportingScreen() {
 
   return (
     <View>
-      <ScreenHeader accentColor={moduleColors.reporting.main} title="Reports & Analytics" subtitle="Module 8 · Treaty performance, combined ratio, top counterparties" />
+      <ScreenHeader accentColor={moduleColors.reporting.main} title="Reports & Analytics" subtitle="Treaty performance, combined ratio, top counterparties" />
 
       {combined && (
         <View style={styles.statGrid}>

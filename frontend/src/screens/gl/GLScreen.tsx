@@ -62,7 +62,7 @@ export function GLScreen() {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.generalAccounting.main}         title="General Ledger"
-        subtitle="Module 6 · Chart of accounts, double-entry journal, trial balance"
+        subtitle="Chart of accounts, double-entry journal, trial balance"
         actions={<Button label="+ New Account" onPress={() => setCreateOpen(true)} />}
       />
 

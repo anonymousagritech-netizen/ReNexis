@@ -72,7 +72,7 @@ export function ContractsScreen({ params }: { params?: Record<string, any> }) {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Treaty & Facultative Contracts"
-        subtitle="Module 2 · Reinsurance — inward and outward contract management"
+        subtitle="Reinsurance — inward and outward contract management"
         actions={<Button label="+ New Contract" onPress={() => setCreateOpen(true)} />}
       />
 
