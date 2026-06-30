@@ -62,26 +62,48 @@ export function Sidebar() {
           const groupColor = moduleColors[items[0].colorKey].main;
           const isExpanded = expandedGroups.has(group);
           const hasActiveItem = items.some((i) => i.key === current.route);
+
+          if (items.length === 1) {
+            const item = items[0];
+            const active = current.route === item.key;
+            return (
+              <View key={group} style={styles.group}>
+                <Pressable
+                  style={[
+                    styles.groupPill,
+                    { backgroundColor: active ? groupColor : colors.surface, borderColor: active ? groupColor : colors.border },
+                  ]}
+                  onPress={() => navigate(item.key as RouteKey)}
+                >
+                  <Text style={[styles.itemIcon, { color: active ? colors.white : colors.textMuted, width: 16 }]}>{item.icon}</Text>
+                  <Text style={[styles.groupLabel, { textTransform: 'none', letterSpacing: 0 }, active && { color: colors.white, fontWeight: '700' }]}>{item.label}</Text>
+                </Pressable>
+              </View>
+            );
+          }
+
           return (
             <View key={group} style={styles.group}>
-              <Pressable style={styles.groupHeaderRow} onPress={() => toggleGroup(group)}>
+              <Pressable
+                style={[
+                  styles.groupPill,
+                  { backgroundColor: isExpanded || hasActiveItem ? `${groupColor}1F` : colors.surface, borderColor: isExpanded || hasActiveItem ? `${groupColor}55` : colors.border },
+                ]}
+                onPress={() => toggleGroup(group)}
+              >
                 <View style={[styles.groupDot, { backgroundColor: groupColor }]} />
-                <Text style={[styles.groupLabel, hasActiveItem && { color: groupColor }]}>{group}</Text>
-                <Text style={styles.chevron}>{isExpanded ? '\u2212' : '+'}</Text>
+                <Text style={[styles.groupLabel, (isExpanded || hasActiveItem) && { color: groupColor, fontWeight: '700' }]}>{group}</Text>
+                <Text style={[styles.chevron, { color: groupColor }]}>{isExpanded ? '\u2304' : '\u203A'}</Text>
               </Pressable>
               {isExpanded && (
-                <View style={[styles.groupBox, { borderColor: `${groupColor}33` }]}>
-                  {items.map((item, idx) => {
+                <View style={styles.itemList}>
+                  {items.map((item) => {
                     const active = current.route === item.key;
                     return (
                       <Pressable
                         key={item.key}
                         onPress={() => navigate(item.key as RouteKey)}
-                        style={[
-                          styles.item,
-                          idx !== items.length - 1 && styles.itemDivider,
-                          active && { backgroundColor: `${groupColor}22` },
-                        ]}
+                        style={[styles.item, active && { backgroundColor: `${groupColor}1A` }]}
                       >
                         {active && <View style={[styles.activeBar, { backgroundColor: groupColor }]} />}
                         <Text style={[styles.itemIcon, { color: active ? groupColor : colors.textMuted }]}>{item.icon}</Text>
@@ -164,57 +186,55 @@ const styles = StyleSheet.create({
   group: {
     marginBottom: spacing.sm,
   },
-  groupHeaderRow: {
+  groupPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 6,
+    gap: spacing.sm,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    paddingVertical: 11,
+    paddingHorizontal: spacing.md,
   },
   groupDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
   },
   groupLabel: {
-    ...typography.caption,
-    color: colors.textMuted,
+    ...typography.small,
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
     flex: 1,
+    fontWeight: '600',
   },
   chevron: {
-    ...typography.caption,
-    color: colors.textMuted,
+    fontSize: 16,
     fontWeight: '700',
-    width: 12,
-    textAlign: 'center',
   },
-  groupBox: {
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    overflow: 'hidden',
-    backgroundColor: colors.surface,
+  itemList: {
     marginTop: spacing.xs,
+    marginLeft: spacing.md,
+    paddingLeft: spacing.sm,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.border,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 9,
     paddingHorizontal: spacing.sm,
     gap: spacing.sm,
+    borderRadius: radius.md,
     position: 'relative',
-  },
-  itemDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   activeBar: {
     position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
+    left: -10,
+    top: 4,
+    bottom: 4,
     width: 3,
+    borderRadius: 2,
   },
   itemIcon: {
     width: 18,
