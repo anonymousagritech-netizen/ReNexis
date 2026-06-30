@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json && npx prisma generate",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json && npx prisma generate",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
@@ -47,6 +47,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^9.0.8",
     "prisma": "^5.20.0",
+    "tsc-alias": "^1.8.17",
     "tsx": "^4.19.1",
     "typescript": "5.9.3"
   }
