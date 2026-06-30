@@ -63,7 +63,7 @@ export function ContractsScreen({ params }: { params?: Record<string, any> }) {
     { key: 'name', header: 'Name', width: 260, render: (r) => r.name },
     { key: 'direction', header: 'Direction', width: 100, render: (r) => r.direction },
     { key: 'treatyType', header: 'Type', width: 200, render: (r) => r.treatyType.replace(/_/g, ' ') },
-    { key: 'limit', header: 'Limit', width: 140, render: (r) => (r.limit ? formatCurrency(r.limit, r.currency) : '—') },
+    { key: 'limit', header: 'Limit', width: 140, render: (r) => (r.limit ? formatCurrency(r.limit, r.currency) : '-') },
     { key: 'capacityUsed', header: 'Capacity Used', width: 140, render: (r) => formatCurrency(r.capacityUsed, r.currency) },
     { key: 'expiryDate', header: 'Expiry', width: 120, render: (r) => formatDate(r.expiryDate) },
     { key: 'status', header: 'Status', width: 130, render: (r) => <Badge label={r.status} /> },
@@ -72,7 +72,7 @@ export function ContractsScreen({ params }: { params?: Record<string, any> }) {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.reinsurance.main}         title="Treaty & Facultative Contracts"
-        subtitle="Reinsurance — inward and outward contract management"
+        subtitle="Inward and outward reinsurance contract management"
         actions={<Button label="+ New Contract" onPress={() => setCreateOpen(true)} />}
       />
 

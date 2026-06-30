@@ -14,7 +14,7 @@ export function NotificationsBell() {
       setNotifications(res.notifications);
       setUnreadCount(res.unreadCount);
     } catch {
-      // non-fatal — notifications are a convenience layer
+      // non-fatal: notifications are a convenience layer
     }
   }, []);
 

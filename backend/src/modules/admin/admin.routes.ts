@@ -24,7 +24,7 @@ router.post('/seed', async (req: Request, res: Response) => {
   const result = await seedDemoData(prisma);
   res.json({
     message: result.alreadySeeded
-      ? 'Demo business data already present — users/entity refreshed only.'
+      ? 'Demo business data already present, users/entity refreshed only.'
       : 'Demo data seeded successfully.',
     alreadySeeded: result.alreadySeeded,
     demoAccounts: result.demoAccounts,

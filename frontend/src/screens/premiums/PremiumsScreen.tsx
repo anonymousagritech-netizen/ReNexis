@@ -35,7 +35,7 @@ export function PremiumsScreen() {
   }, [fetchData]);
 
   const columns: Column<PremiumTransaction>[] = [
-    { key: 'contract', header: 'Contract', width: 200, render: (r) => r.contract?.contractNumber || '—' },
+    { key: 'contract', header: 'Contract', width: 200, render: (r) => r.contract?.contractNumber || '-' },
     { key: 'transactionDate', header: 'Date', width: 120, render: (r) => formatDate(r.transactionDate) },
     { key: 'grossPremium', header: 'Gross Premium', width: 150, render: (r) => formatCurrency(r.grossPremium, r.currency) },
     { key: 'brokerage', header: 'Brokerage', width: 130, render: (r) => formatCurrency(r.brokerage, r.currency) },

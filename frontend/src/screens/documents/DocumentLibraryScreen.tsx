@@ -53,7 +53,7 @@ export function DocumentLibraryScreen() {
     { key: 'category', header: 'Category', width: 160, render: (r) => r.category.replace(/_/g, ' ') },
     { key: 'contractId', header: 'Linked To', width: 160, render: (r) => (r.contractId ? 'Contract' : r.claimId ? 'Claim' : 'General') },
     { key: 'size', header: 'Size', width: 100, render: (r) => `${(r.sizeBytes / 1024).toFixed(0)} KB` },
-    { key: 'uploadedBy', header: 'Uploaded By', width: 180, render: (r) => (r.uploadedBy ? `${r.uploadedBy.firstName} ${r.uploadedBy.lastName}` : '—') },
+    { key: 'uploadedBy', header: 'Uploaded By', width: 180, render: (r) => (r.uploadedBy ? `${r.uploadedBy.firstName} ${r.uploadedBy.lastName}` : '-') },
     { key: 'createdAt', header: 'Date', width: 120, render: (r) => formatDate(r.createdAt) },
     {
       key: 'actions',
@@ -71,7 +71,7 @@ export function DocumentLibraryScreen() {
   return (
     <View>
       <ScreenHeader accentColor={moduleColors.system.main}         title="Document Library"
-        subtitle="Treaty wordings, slips, bordereaux files, claims documents — all linked to their parent record"
+        subtitle="Treaty wordings, slips, bordereaux files, claims documents, all linked to their parent record"
         actions={
           Platform.OS === 'web' ? (
             <label style={{ cursor: 'pointer' as any }}>

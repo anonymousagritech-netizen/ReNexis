@@ -54,7 +54,7 @@ export function LifecycleScreen() {
                         <Text style={styles.cardItemMeta}>Expires {formatDate(item.expiryDate)}</Text>
                       </Pressable>
                     ))}
-                    {items.length === 0 && <Text style={styles.emptyCol}>—</Text>}
+                    {items.length === 0 && <Text style={styles.emptyCol}>-</Text>}
                   </ScrollView>
                 </View>
               );

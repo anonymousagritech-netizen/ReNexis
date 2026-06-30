@@ -50,7 +50,7 @@ export function InvestmentsScreen() {
     { key: 'marketValue', header: 'Market Value', width: 150, render: (r) => formatCurrency(r.marketValue, r.currency) },
     { key: 'costBasis', header: 'Cost Basis', width: 150, render: (r) => formatCurrency(r.costBasis, r.currency) },
     { key: 'yieldRate', header: 'Yield', width: 90, render: (r) => formatPercent(r.yieldRate) },
-    { key: 'durationYears', header: 'Duration (yrs)', width: 120, render: (r) => r.durationYears || '—' },
+    { key: 'durationYears', header: 'Duration (yrs)', width: 120, render: (r) => r.durationYears || '-' },
     {
       key: 'actions',
       header: '',
@@ -79,7 +79,7 @@ export function InvestmentsScreen() {
                 </View>
                 {a.regulatoryLimitPct && (
                   <Text style={[styles.allocLimit, a.breachesLimit && { color: colors.danger }]}>
-                    Limit: {a.regulatoryLimitPct}% {a.breachesLimit ? '— BREACH' : ''}
+                    Limit: {a.regulatoryLimitPct}% {a.breachesLimit ? '(BREACH)' : ''}
                   </Text>
                 )}
               </View>
@@ -175,7 +175,7 @@ function RevalueModal({ investment, onClose, onSaved }: { investment: Investment
   };
 
   return (
-    <Modal visible={!!investment} onClose={onClose} title={`Revalue — ${investment.assetName}`} width={420}>
+    <Modal visible={!!investment} onClose={onClose} title={`Revalue: ${investment.assetName}`} width={420}>
       <FormField label="New Market Value">
         <Input value={value} onChangeText={setValue} keyboardType="numeric" />
       </FormField>

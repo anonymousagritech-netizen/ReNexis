@@ -31,12 +31,12 @@ export function AuditScreen() {
     { key: 'user', header: 'Actor', width: 200, render: (r) => (r.user ? `${r.user.firstName} ${r.user.lastName} (${r.user.role})` : 'System') },
     { key: 'action', header: 'Action', width: 110, render: (r) => <Badge label={r.action} /> },
     { key: 'entityName', header: 'Entity', width: 200, render: (r) => r.entityName },
-    { key: 'ipAddress', header: 'IP Address', width: 140, render: (r) => r.ipAddress || '—' },
+    { key: 'ipAddress', header: 'IP Address', width: 140, render: (r) => r.ipAddress || '-' },
   ];
 
   return (
     <View>
-      <ScreenHeader accentColor={moduleColors.system.main} title="Audit Trail" subtitle="Immutable record of every mutation — actor, action, before/after state" />
+      <ScreenHeader accentColor={moduleColors.system.main} title="Audit Trail" subtitle="Immutable record of every mutation: actor, action, before/after state" />
       <Card>
         <DataTable columns={columns} data={logs} loading={loading} emptyMessage="No audit events recorded yet." />
       </Card>

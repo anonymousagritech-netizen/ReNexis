@@ -136,7 +136,7 @@ router.post(
 
     const newPaid = Number(claim.paidAmount) + req.body.amount;
     if (newPaid > Number(claim.grossIncurred) + 0.01) {
-      throw new AppError('Payment exceeds gross incurred reserve — adjust reserve first', 400);
+      throw new AppError('Payment exceeds gross incurred reserve, adjust reserve first', 400);
     }
 
     const updated = await prisma.$transaction(async (tx) => {

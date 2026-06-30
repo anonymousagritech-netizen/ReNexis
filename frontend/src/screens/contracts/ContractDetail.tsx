@@ -105,19 +105,19 @@ export function ContractDetail({ contractId, onBack, onChanged }: { contractId: 
       <View style={styles.grid}>
         <Card style={styles.gridCard}>
           <Text style={styles.cardLabel}>Structure</Text>
-          <DetailRow label="Retention" value={contract.retention ? formatCurrency(contract.retention, contract.currency) : '—'} />
-          <DetailRow label="Limit" value={contract.limit ? formatCurrency(contract.limit, contract.currency) : '—'} />
+          <DetailRow label="Retention" value={contract.retention ? formatCurrency(contract.retention, contract.currency) : '-'} />
+          <DetailRow label="Limit" value={contract.limit ? formatCurrency(contract.limit, contract.currency) : '-'} />
           <DetailRow label="Reinstatements" value={String(contract.reinstatements)} />
-          <DetailRow label="Total Capacity" value={contract.totalCapacity ? formatCurrency(contract.totalCapacity, contract.currency) : '—'} />
+          <DetailRow label="Total Capacity" value={contract.totalCapacity ? formatCurrency(contract.totalCapacity, contract.currency) : '-'} />
           <DetailRow label="Capacity Used" value={formatCurrency(contract.capacityUsed, contract.currency)} />
         </Card>
 
         <Card style={styles.gridCard}>
           <Text style={styles.cardLabel}>Commercial Terms</Text>
-          <DetailRow label="Brokerage" value={contract.brokeragePct ? `${contract.brokeragePct}%` : '—'} />
-          <DetailRow label="Commission Type" value={contract.commissionType ? titleCase(contract.commissionType) : '—'} />
-          <DetailRow label="Flat Commission" value={contract.commissionFlatPct ? `${contract.commissionFlatPct}%` : '—'} />
-          <DetailRow label="Profit Commission" value={contract.profitCommissionPct ? `${contract.profitCommissionPct}%` : '—'} />
+          <DetailRow label="Brokerage" value={contract.brokeragePct ? `${contract.brokeragePct}%` : '-'} />
+          <DetailRow label="Commission Type" value={contract.commissionType ? titleCase(contract.commissionType) : '-'} />
+          <DetailRow label="Flat Commission" value={contract.commissionFlatPct ? `${contract.commissionFlatPct}%` : '-'} />
+          <DetailRow label="Profit Commission" value={contract.profitCommissionPct ? `${contract.profitCommissionPct}%` : '-'} />
         </Card>
 
         <Card style={styles.gridCard}>

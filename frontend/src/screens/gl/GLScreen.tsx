@@ -97,8 +97,8 @@ export function GLScreen() {
               {trialBalance.accounts.map((a, idx) => (
                 <View key={idx} style={styles.tbRow}>
                   <Text style={styles.tbCellName}>{a.accountCode} · {a.accountName}</Text>
-                  <Text style={styles.tbCell}>{a.debit ? formatCurrency(a.debit) : '—'}</Text>
-                  <Text style={styles.tbCell}>{a.credit ? formatCurrency(a.credit) : '—'}</Text>
+                  <Text style={styles.tbCell}>{a.debit ? formatCurrency(a.debit) : '-'}</Text>
+                  <Text style={styles.tbCell}>{a.credit ? formatCurrency(a.credit) : '-'}</Text>
                 </View>
               ))}
               <View style={styles.tbTotalRow}>

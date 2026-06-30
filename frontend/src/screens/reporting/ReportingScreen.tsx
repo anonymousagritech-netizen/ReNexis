@@ -66,7 +66,7 @@ export function ReportingScreen() {
         <Card style={{ marginBottom: spacing.md }}>
           <Text style={styles.cardLabel}>Retrocession Net Position</Text>
           <Text style={styles.muted}>
-            Gross assumed incurred, net of retro recoveries — the true risk retained after all layers of protection.
+            Gross assumed incurred, net of retro recoveries: the true risk retained after all layers of protection.
           </Text>
           <View style={styles.retroRow}>
             <RetroStat label="Gross Assumed Incurred" value={formatCurrency(retroPosition.grossAssumedIncurred)} />

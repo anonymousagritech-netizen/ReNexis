@@ -50,7 +50,7 @@ export function AccountingScreen() {
   }, [fetchData]);
 
   const soaColumns: Column<StatementOfAccount>[] = [
-    { key: 'contract', header: 'Contract', width: 200, render: (r) => r.contract?.contractNumber || '—' },
+    { key: 'contract', header: 'Contract', width: 200, render: (r) => r.contract?.contractNumber || '-' },
     { key: 'periodStart', header: 'Period', width: 200, render: (r) => `${formatDate(r.periodStart)} – ${formatDate(r.periodEnd)}` },
     { key: 'premiumIn', header: 'Premium In', width: 130, render: (r) => formatCurrency(r.premiumIn, r.currency) },
     { key: 'claimsOut', header: 'Claims Out', width: 130, render: (r) => formatCurrency(r.claimsOut, r.currency) },
@@ -82,7 +82,7 @@ export function AccountingScreen() {
         }
       />
       {revalueResult !== null && (
-        <Text style={styles.hint}>FX revaluation complete — {revalueResult} open foreign-currency balance{revalueResult === 1 ? '' : 's'} revalued and posted to the ledger.</Text>
+        <Text style={styles.hint}>FX revaluation complete: {revalueResult} open foreign-currency balance{revalueResult === 1 ? '' : 's'} revalued and posted to the ledger.</Text>
       )}
 
       <View style={styles.tabs}>

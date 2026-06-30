@@ -126,7 +126,7 @@ function ClaimCreateModal({ visible, onClose, onCreated }: { visible: boolean; o
         <Input value={form.description} onChangeText={(v) => update('description', v)} multiline placeholder="Loss details, location, cause..." />
       </FormField>
 
-      <FormField label="Catastrophe Event (optional — groups losses from the same event)">
+      <FormField label="Catastrophe Event (optional, groups losses from the same event)">
         {newEventMode ? (
           <View>
             <View style={styles.row}>

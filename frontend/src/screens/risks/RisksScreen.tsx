@@ -38,8 +38,8 @@ export function RisksScreen() {
 
   const columns: Column<Risk>[] = [
     { key: 'riskRef', header: 'Risk Ref', width: 150, render: (r) => r.riskRef },
-    { key: 'peril', header: 'Peril', width: 120, render: (r) => r.peril || '—' },
-    { key: 'catZone', header: 'Cat Zone', width: 120, render: (r) => r.catZone || '—' },
+    { key: 'peril', header: 'Peril', width: 120, render: (r) => r.peril || '-' },
+    { key: 'catZone', header: 'Cat Zone', width: 120, render: (r) => r.catZone || '-' },
     { key: 'sumInsured', header: 'Sum Insured', width: 150, render: (r) => formatCurrency(r.sumInsured, r.currency) },
     { key: 'allocatedAmount', header: 'Allocated', width: 150, render: (r) => formatCurrency(r.allocatedAmount, r.currency) },
     {
@@ -61,7 +61,7 @@ export function RisksScreen() {
         r.specialAcceptanceStatus === 'PENDING' ? (
           <Button label="Review" variant="ghost" small onPress={() => setReviewTarget(r)} />
         ) : (
-          <Text style={{ color: colors.textMuted }}>—</Text>
+          <Text style={{ color: colors.textMuted }}>-</Text>
         ),
     },
   ];

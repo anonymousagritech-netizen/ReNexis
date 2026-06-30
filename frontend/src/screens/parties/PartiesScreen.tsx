@@ -43,7 +43,7 @@ export function PartiesScreen() {
     { key: 'name', header: 'Name', width: 240, render: (r) => r.name },
     { key: 'type', header: 'Type', width: 160, render: (r) => r.type },
     { key: 'country', header: 'Country', width: 140, render: (r) => r.country },
-    { key: 'creditRating', header: 'Rating', width: 90, render: (r) => r.creditRating || '—' },
+    { key: 'creditRating', header: 'Rating', width: 90, render: (r) => r.creditRating || '-' },
     { key: 'kycStatus', header: 'KYC', width: 130, render: (r) => <Badge label={r.kycStatus} /> },
     { key: 'amlRiskRating', header: 'AML Risk', width: 110, render: (r) => <Badge label={r.amlRiskRating} status={r.amlRiskRating === 'HIGH' ? 'FAIL' : r.amlRiskRating === 'MEDIUM' ? 'PENDING' : 'PASS'} /> },
     {
@@ -130,9 +130,9 @@ function KycModal({ party, onClose, onSaved }: { party: Party | null; onClose: (
   };
 
   return (
-    <Modal visible={!!party} onClose={onClose} title={`KYC Review — ${party.name}`} width={420}>
+    <Modal visible={!!party} onClose={onClose} title={`KYC Review: ${party.name}`} width={420}>
       <FormField label="Current Status"><Badge label={party.kycStatus} /></FormField>
-      <FormField label="Registration No."><Text style={{ color: colors.textPrimary }}>{party.registrationNo || '—'}</Text></FormField>
+      <FormField label="Registration No."><Text style={{ color: colors.textPrimary }}>{party.registrationNo || '-'}</Text></FormField>
       <View style={styles.actions}>
         <Button label="Reject" variant="danger" small onPress={() => decide('REJECTED')} loading={saving} />
         <Button label="Verify" small onPress={() => decide('VERIFIED')} loading={saving} />

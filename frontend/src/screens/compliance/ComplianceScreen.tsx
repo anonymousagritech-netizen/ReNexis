@@ -90,7 +90,7 @@ export function ComplianceScreen() {
 
       <Card style={{ marginBottom: spacing.md }}>
         <View style={styles.cardHeaderRow}>
-          <Text style={styles.cardLabel}>Solvency II — Capital Adequacy Snapshot</Text>
+          <Text style={styles.cardLabel}>Solvency II Capital Adequacy Snapshot</Text>
           <Button label="Refresh Snapshot" small variant="secondary" onPress={handleViewSolvencyII} loading={solvencyLoading} />
         </View>
         {!solvency ? (
@@ -103,7 +103,7 @@ export function ComplianceScreen() {
             <SolvencyStat label="Estimated Own Funds" value={formatCurrency(solvency.estimatedOwnFunds)} color={solvency.estimatedOwnFunds >= 0 ? colors.success : colors.danger} />
             <SolvencyStat
               label="Indicative Solvency Ratio"
-              value={solvency.solvencyRatioIndicative !== null ? formatPercent(solvency.solvencyRatioIndicative) : '—'}
+              value={solvency.solvencyRatioIndicative !== null ? formatPercent(solvency.solvencyRatioIndicative) : '-'}
               color={solvency.solvencyRatioIndicative >= 100 ? colors.success : colors.danger}
             />
           </View>

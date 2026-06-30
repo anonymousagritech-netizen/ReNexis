@@ -69,7 +69,7 @@ export function DocumentsPanel({ contractId, claimId }: { contractId?: string; c
       {loading ? (
         <Text style={styles.muted}>Loading…</Text>
       ) : documents.length === 0 ? (
-        <Text style={styles.muted}>No documents attached yet — treaty wordings, slips, or claims files can be uploaded here.</Text>
+        <Text style={styles.muted}>No documents attached yet. Treaty wordings, slips, or claims files can be uploaded here.</Text>
       ) : (
         documents.map((d) => (
           <View key={d.id} style={styles.docRow}>
