@@ -1,0 +1,706 @@
+// ReNexis Reinsurance Platform — Core Data Spine
+// Contract -> Risk -> Premium -> Claim -> Cash -> Ledger
+// Every module in the blueprint is a lens on this schema.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// 1. SYSTEM ARCHITECTURE & SECURITY
+// ============================================================
+
+enum UserRole {
+  ADMIN
+  UNDERWRITER
+  CLAIMS
+  ACCOUNTS
+  ACTUARY
+  AUDITOR
+  COMPLIANCE
+  INVESTMENT_MANAGER
+  VIEWER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          UserRole  @default(VIEWER)
+  isActive      Boolean   @default(true)
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+  delegationLimit Decimal @default(0) @db.Decimal(18, 2) // max risk/claim approval authority
+  entityId      String?
+  entity        Entity?   @relation(fields: [entityId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  auditLogs        AuditLog[]
+  documentsUploaded Document[]
+  contractsCreated Contract[]      @relation("ContractCreatedBy")
+  contractsOwned   Contract[]      @relation("ContractUnderwriter")
+  claimsHandled    Claim[]         @relation("ClaimHandler")
+  approvals        Approval[]
+  notifications    Notification[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Entity {
+  // Multi-entity / multi-GAAP support: each legal entity has its own books
+  id           String   @id @default(uuid())
+  name         String
+  code         String   @unique
+  country      String
+  baseCurrency String   @default("USD")
+  gaapStandard String   @default("IFRS17") // IFRS17 | US_GAAP | LOCAL_GAAP
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  users     User[]
+  contracts Contract[]
+  ledgerEntries LedgerEntry[]
+  glAccounts GLAccount[]
+  @@map("entities")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String   // CREATE | UPDATE | DELETE | APPROVE | LOGIN | EXPORT
+  entityName  String   // table/model name affected
+  recordId    String?
+  beforeData  Json?
+  afterData   Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityName, recordId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   // TREATY_WORDING | SLIP | BORDEREAUX | CLAIMS_DOC | COMPLIANCE | OTHER
+  storageKey  String   // path/key in storage bucket
+  mimeType    String
+  sizeBytes   Int
+  contractId  String?
+  contract    Contract? @relation(fields: [contractId], references: [id])
+  claimId     String?
+  claim       Claim?    @relation(fields: [claimId], references: [id])
+  uploadedById String
+  uploadedBy  User     @relation(fields: [uploadedById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@map("documents")
+}
+
+model Approval {
+  id          String   @id @default(uuid())
+  subjectType String   // RISK | CLAIM | CONTRACT | CASH_CALL
+  subjectId   String
+  requestedAmount Decimal @db.Decimal(18, 2)
+  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED | ESCALATED
+  approverId  String?
+  approver    User?    @relation(fields: [approverId], references: [id])
+  comments    String?
+  createdAt   DateTime @default(now())
+  decidedAt   DateTime?
+
+  @@map("approvals")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // RENEWAL_DUE | CLAIM_ESCALATION | CASH_CALL | COMPLIANCE_ALERT
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// ============================================================
+// PARTIES (Cedents, Brokers, Reinsurers, Retrocessionaires)
+// ============================================================
+
+enum PartyType {
+  CEDENT
+  BROKER
+  REINSURER
+  RETROCESSIONAIRE
+}
+
+model Party {
+  id           String    @id @default(uuid())
+  name         String
+  type         PartyType
+  country      String
+  currency     String    @default("USD")
+  kycStatus    String    @default("PENDING") // PENDING | VERIFIED | REJECTED | EXPIRED
+  amlRiskRating String   @default("LOW") // LOW | MEDIUM | HIGH
+  ratingAgency String?
+  creditRating String?   // S&P/Moody's/AM Best rating - relevant for retro security
+  registrationNo String?
+  contactEmail String?
+  contactPhone String?
+  address      String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  contractParties       ContractParty[]
+  claimsAsCedent        Claim[]
+  currentAccountEntries CurrentAccountEntry[]
+
+  @@index([type])
+  @@map("parties")
+}
+
+// ============================================================
+// 2. REINSURANCE MODULE — Treaty / Fac / Underwriting / Claims / Retro
+// ============================================================
+
+enum ContractDirection {
+  INWARD   // assumed
+  OUTWARD  // ceded / retrocession
+}
+
+enum ContractKind {
+  TREATY
+  FACULTATIVE
+}
+
+enum TreatyType {
+  QUOTA_SHARE
+  SURPLUS_SHARE
+  EXCESS_OF_LOSS
+  CATASTROPHE_XL
+  STOP_LOSS
+  FACULTATIVE_PROPORTIONAL
+  FACULTATIVE_NON_PROPORTIONAL
+}
+
+enum ContractStatus {
+  DESIGN
+  QUOTED
+  BOUND
+  IN_FORCE
+  RENEWAL_DUE
+  ENDORSED
+  RUN_OFF
+  CLOSED
+  CANCELLED
+}
+
+model Contract {
+  id              String            @id @default(uuid())
+  contractNumber  String            @unique
+  name            String
+  direction       ContractDirection
+  kind            ContractKind
+  treatyType      TreatyType
+  isRetrocession  Boolean           @default(false)
+
+  entityId        String
+  entity          Entity            @relation(fields: [entityId], references: [id])
+
+  inceptionDate   DateTime
+  expiryDate      DateTime
+  currency        String            @default("USD")
+
+  // Layer / structure terms
+  retention       Decimal?          @db.Decimal(18, 2)
+  limit           Decimal?          @db.Decimal(18, 2)
+  reinstatements  Int               @default(0)
+  reinstatementPremiumPct Decimal?  @db.Decimal(7,4)
+  brokeragePct    Decimal?          @db.Decimal(7,4)
+  commissionType  String?           // FLAT | SLIDING_SCALE
+  commissionFlatPct Decimal?        @db.Decimal(7,4)
+  commissionScale Json?             // [{ lossRatioFrom, lossRatioTo, commissionPct }]
+  profitCommissionPct Decimal?      @db.Decimal(7,4)
+
+  // Capacity tracking (auto-allocation against this)
+  totalCapacity   Decimal?          @db.Decimal(18, 2)
+  capacityUsed    Decimal           @default(0) @db.Decimal(18, 2)
+
+  status          ContractStatus    @default(DESIGN)
+  parentContractId String?          // for renewals - link to prior period contract
+  parentContract  Contract?         @relation("ContractRenewal", fields: [parentContractId], references: [id])
+  renewals        Contract[]        @relation("ContractRenewal")
+
+  underwriterId   String?
+  underwriter     User?             @relation("ContractUnderwriter", fields: [underwriterId], references: [id])
+  createdById     String
+  createdBy       User              @relation("ContractCreatedBy", fields: [createdById], references: [id])
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  parties         ContractParty[]
+  risks           Risk[]
+  premiums        PremiumTransaction[]
+  claims          Claim[]
+  documents       Document[]
+  ledgerEntries   LedgerEntry[]
+  soaStatements   StatementOfAccount[]
+  endorsements    Endorsement[]
+  lifecycleEvents LifecycleEvent[]
+
+  @@index([status])
+  @@index([direction])
+  @@index([expiryDate])
+  @@map("contracts")
+}
+
+model ContractParty {
+  id          String   @id @default(uuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id])
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id])
+  role        String   // CEDENT | BROKER | REINSURER | RETROCESSIONAIRE
+  sharePct    Decimal? @db.Decimal(7,4) // % share of the layer for this party (e.g. multiple reinsurers on a layer)
+
+  @@unique([contractId, partyId, role])
+  @@map("contract_parties")
+}
+
+model Endorsement {
+  id          String   @id @default(uuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id])
+  endorsementNo Int
+  description String
+  effectiveDate DateTime
+  changes     Json     // diff of changed fields
+  createdAt   DateTime @default(now())
+
+  @@map("endorsements")
+}
+
+model LifecycleEvent {
+  id          String   @id @default(uuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id])
+  stage       ContractStatus
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@map("lifecycle_events")
+}
+
+// ----- Underwriting & Risk -----
+
+model Risk {
+  id              String   @id @default(uuid())
+  contractId      String
+  contract        Contract @relation(fields: [contractId], references: [id])
+  riskRef         String   // cedent's policy/risk reference
+  description     String?
+  sumInsured       Decimal  @db.Decimal(18, 2)
+  premiumAmount   Decimal  @db.Decimal(18, 2)
+  currency        String   @default("USD")
+  catZone         String?  // catastrophe accumulation zone code
+  peril           String?  // FIRE | FLOOD | EARTHQUAKE | WINDSTORM | etc
+  latitude        Float?
+  longitude       Float?
+  allocatedAmount Decimal  @default(0) @db.Decimal(18, 2) // amount allocated against treaty capacity
+  exceedsAutoCapacity Boolean @default(false)
+  specialAcceptanceStatus String? // null | PENDING | APPROVED | REJECTED
+  inceptionDate   DateTime
+  expiryDate      DateTime
+  createdAt       DateTime @default(now())
+
+  claims          Claim[]
+
+  @@index([contractId])
+  @@index([catZone])
+  @@map("risks")
+}
+
+model CatastropheEvent {
+  id          String   @id @default(uuid())
+  name        String
+  peril       String
+  eventDate   DateTime
+  zone        String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  claims      Claim[]
+  @@map("catastrophe_events")
+}
+
+// ----- Premium -----
+
+enum PremiumStatus {
+  WRITTEN
+  EARNED
+  UNEARNED
+  CANCELLED
+}
+
+model PremiumTransaction {
+  id            String   @id @default(uuid())
+  contractId    String
+  contract      Contract @relation(fields: [contractId], references: [id])
+  riskId        String?
+  transactionDate DateTime
+  grossPremium  Decimal  @db.Decimal(18, 2)
+  brokerage     Decimal  @default(0) @db.Decimal(18, 2)
+  commission    Decimal  @default(0) @db.Decimal(18, 2)
+  netPremium    Decimal  @db.Decimal(18, 2)
+  currency      String   @default("USD")
+  status        PremiumStatus @default(WRITTEN)
+  earnedToDate  Decimal  @default(0) @db.Decimal(18, 2)
+  bordereauxBatchId String?
+  bordereauxBatch BordereauxBatch? @relation(fields: [bordereauxBatchId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([contractId])
+  @@map("premium_transactions")
+}
+
+// ----- Claims & Recoveries -----
+
+enum ClaimStatus {
+  NOTIFIED
+  RBNS        // Reported But Not Settled
+  IBNR        // Incurred But Not Reported (bulk reserve, may not map to single claim record)
+  RESERVED
+  PARTIALLY_PAID
+  SETTLED
+  CLOSED
+  REOPENED
+  REJECTED
+}
+
+model Claim {
+  id              String      @id @default(uuid())
+  claimNumber     String      @unique
+  contractId      String
+  contract        Contract    @relation(fields: [contractId], references: [id])
+  riskId          String?
+  risk            Risk?       @relation(fields: [riskId], references: [id])
+  cedentId        String?
+  cedent          Party?      @relation(fields: [cedentId], references: [id])
+  catastropheEventId String?
+  catastropheEvent CatastropheEvent? @relation(fields: [catastropheEventId], references: [id])
+
+  dateOfLoss      DateTime
+  dateNotified    DateTime    @default(now())
+  status          ClaimStatus @default(NOTIFIED)
+  currency        String      @default("USD")
+
+  grossIncurred   Decimal     @default(0) @db.Decimal(18, 2)
+  reserveAmount   Decimal     @default(0) @db.Decimal(18, 2)
+  paidAmount      Decimal     @default(0) @db.Decimal(18, 2)
+  recoveryAmount  Decimal     @default(0) @db.Decimal(18, 2) // amount recoverable per treaty layer
+  cashCallAmount  Decimal     @default(0) @db.Decimal(18, 2)
+  cashCallStatus  String?     // null | REQUESTED | RECEIVED | DECLINED
+
+  description     String?
+  handlerId       String?
+  handler         User?       @relation("ClaimHandler", fields: [handlerId], references: [id])
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  documents       Document[]
+  movements       ClaimMovement[]
+  ledgerEntries   LedgerEntry[]
+
+  @@index([status])
+  @@index([contractId])
+  @@map("claims")
+}
+
+model ClaimMovement {
+  // every reserve change / payment / recovery is logged as a movement for full audit trail
+  id        String   @id @default(uuid())
+  claimId   String
+  claim     Claim    @relation(fields: [claimId], references: [id])
+  type      String   // RESERVE_SET | RESERVE_CHANGE | PAYMENT | RECOVERY | CASH_CALL
+  amount    Decimal  @db.Decimal(18, 2)
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@map("claim_movements")
+}
+
+model BordereauxBatch {
+  id          String   @id @default(uuid())
+  contractId  String?
+  type        String   // PREMIUM | CLAIMS
+  fileName    String
+  status      String   @default("PROCESSING") // PROCESSING | COMPLETED | FAILED
+  totalRecords Int     @default(0)
+  errorLog    Json?
+  uploadedAt  DateTime @default(now())
+
+  premiums    PremiumTransaction[]
+  @@map("bordereaux_batches")
+}
+
+// ============================================================
+// 3. TECHNICAL ACCOUNTING (Statement of Account, Current Account)
+// ============================================================
+
+model StatementOfAccount {
+  id          String   @id @default(uuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id])
+  periodStart DateTime
+  periodEnd   DateTime
+  currency    String   @default("USD")
+
+  premiumIn     Decimal @default(0) @db.Decimal(18,2)
+  premiumOut    Decimal @default(0) @db.Decimal(18,2)
+  claimsIn      Decimal @default(0) @db.Decimal(18,2)
+  claimsOut     Decimal @default(0) @db.Decimal(18,2)
+  commission    Decimal @default(0) @db.Decimal(18,2)
+  brokerage     Decimal @default(0) @db.Decimal(18,2)
+  profitCommission Decimal @default(0) @db.Decimal(18,2)
+  balance       Decimal @default(0) @db.Decimal(18,2)
+
+  status        String  @default("DRAFT") // DRAFT | ISSUED | SETTLED
+  issuedAt      DateTime?
+  pdfStorageKey String?
+  createdAt     DateTime @default(now())
+
+  @@map("statements_of_account")
+}
+
+model CurrentAccountEntry {
+  id          String   @id @default(uuid())
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id])
+  currency    String   @default("USD")
+  description String
+  debit       Decimal  @default(0) @db.Decimal(18,2)
+  credit      Decimal  @default(0) @db.Decimal(18,2)
+  transactionDate DateTime
+  reference   String?
+  reconciled  Boolean  @default(false)
+  bankStatementRef String?
+  createdAt   DateTime @default(now())
+
+  @@index([partyId])
+  @@map("current_account_entries")
+}
+
+model FxRate {
+  id        String   @id @default(uuid())
+  baseCurrency String
+  quoteCurrency String
+  rate      Decimal  @db.Decimal(18, 8)
+  rateDate  DateTime
+  source    String   @default("MANUAL")
+
+  @@unique([baseCurrency, quoteCurrency, rateDate])
+  @@map("fx_rates")
+}
+
+// ============================================================
+// 4. INVESTMENT MODULE
+// ============================================================
+
+enum AssetClass {
+  BOND
+  EQUITY
+  REAL_ESTATE
+  CASH_EQUIVALENT
+  ALTERNATIVE
+  LOAN
+}
+
+model Investment {
+  id            String     @id @default(uuid())
+  assetName     String
+  assetClass    AssetClass
+  identifier    String?    // ISIN / ticker
+  currency      String     @default("USD")
+  quantity      Decimal    @db.Decimal(18, 4)
+  costBasis     Decimal    @db.Decimal(18, 2)
+  marketValue   Decimal    @db.Decimal(18, 2)
+  maturityDate  DateTime?
+  acquisitionDate DateTime
+  yieldRate     Decimal?   @db.Decimal(7,4)
+  regulatoryLimitPct Decimal? @db.Decimal(7,4) // max % of portfolio allowed for this class
+  durationYears Decimal?   @db.Decimal(7,2) // for asset-liability duration matching
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  incomeRecords InvestmentIncome[]
+  valuations    InvestmentValuation[]
+
+  @@index([assetClass])
+  @@map("investments")
+}
+
+model InvestmentIncome {
+  id            String   @id @default(uuid())
+  investmentId  String
+  investment    Investment @relation(fields: [investmentId], references: [id])
+  type          String   // INTEREST | DIVIDEND | REALIZED_GAIN | UNREALIZED_GAIN
+  amount        Decimal  @db.Decimal(18, 2)
+  recognizedDate DateTime
+  postedToGL    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@map("investment_income")
+}
+
+model InvestmentValuation {
+  id           String   @id @default(uuid())
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id])
+  valuationDate DateTime
+  marketValue  Decimal  @db.Decimal(18, 2)
+  source       String   @default("MANUAL")
+  createdAt    DateTime @default(now())
+
+  @@map("investment_valuations")
+}
+
+// ============================================================
+// 6. GENERAL LEDGER (Corporate + Technical Accounting Postings)
+// ============================================================
+
+enum GLAccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+model GLAccount {
+  id          String        @id @default(uuid())
+  entityId    String
+  entity      Entity        @relation(fields: [entityId], references: [id])
+  code        String
+  name        String
+  type        GLAccountType
+  parentId    String?
+  parent      GLAccount?    @relation("GLHierarchy", fields: [parentId], references: [id])
+  children    GLAccount[]   @relation("GLHierarchy")
+  isActive    Boolean       @default(true)
+
+  ledgerEntries LedgerEntry[]
+  @@unique([entityId, code])
+  @@map("gl_accounts")
+}
+
+model LedgerEntry {
+  // Double-entry style: each posting is debit or credit against a GL account
+  id          String   @id @default(uuid())
+  entityId    String
+  entity      Entity   @relation(fields: [entityId], references: [id])
+  glAccountId String
+  glAccount   GLAccount @relation(fields: [glAccountId], references: [id])
+  journalRef  String   // groups entries belonging to the same journal/transaction
+  description String
+  debit       Decimal  @default(0) @db.Decimal(18, 2)
+  credit      Decimal  @default(0) @db.Decimal(18, 2)
+  currency    String   @default("USD")
+  postingDate DateTime
+  source      String   // TECHNICAL_ACCOUNTING | GENERAL_ACCOUNTING | INVESTMENT | MANUAL
+  contractId  String?
+  contract    Contract? @relation(fields: [contractId], references: [id])
+  claimId     String?
+  claim       Claim?    @relation(fields: [claimId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([journalRef])
+  @@index([glAccountId])
+  @@index([postingDate])
+  @@map("ledger_entries")
+}
+
+model FixedAsset {
+  id              String   @id @default(uuid())
+  name            String
+  category        String
+  acquisitionDate DateTime
+  cost            Decimal  @db.Decimal(18,2)
+  usefulLifeYears Int
+  depreciationMethod String @default("STRAIGHT_LINE")
+  accumulatedDepreciation Decimal @default(0) @db.Decimal(18,2)
+  currentValue    Decimal  @db.Decimal(18,2)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  @@map("fixed_assets")
+}
+
+// ============================================================
+// 7. REGULATORY COMPLIANCE
+// ============================================================
+
+model ComplianceCheck {
+  id          String   @id @default(uuid())
+  type        String   // KYC | AML | SOLVENCY | SCHEDULE_F | IFRS17_CSM | GDPR
+  subjectType String   // PARTY | CONTRACT | ENTITY
+  subjectId   String
+  status      String   @default("PENDING") // PENDING | PASS | FAIL | FLAGGED
+  details     Json?
+  checkedAt   DateTime @default(now())
+  checkedById String?
+
+  @@map("compliance_checks")
+}
+
+model RegulatoryReport {
+  id          String   @id @default(uuid())
+  reportType  String   // SCHEDULE_F | SOLVENCY_II_QRT | IFRS17_DISCLOSURE | LOCAL
+  entityId    String
+  periodStart DateTime
+  periodEnd   DateTime
+  status      String   @default("DRAFT") // DRAFT | GENERATED | FILED
+  storageKey  String?
+  generatedAt DateTime?
+  filedAt     DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("regulatory_reports")
+}
+
+model CSMRecord {
+  // IFRS17 Contractual Service Margin tracking (simplified — actuarial-validated inputs expected)
+  id            String   @id @default(uuid())
+  contractId    String
+  periodStart   DateTime
+  periodEnd     DateTime
+  openingCSM    Decimal  @db.Decimal(18,2)
+  newBusinessCSM Decimal @default(0) @db.Decimal(18,2)
+  interestAccretion Decimal @default(0) @db.Decimal(18,2)
+  changesInEstimate Decimal @default(0) @db.Decimal(18,2)
+  csmRelease    Decimal  @default(0) @db.Decimal(18,2)
+  closingCSM    Decimal  @db.Decimal(18,2)
+  createdAt     DateTime @default(now())
+
+  @@map("csm_records")
+}
