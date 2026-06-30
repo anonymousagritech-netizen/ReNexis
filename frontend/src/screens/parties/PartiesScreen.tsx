@@ -132,7 +132,7 @@ function KycModal({ party, onClose, onSaved }: { party: Party | null; onClose: (
   return (
     <Modal visible={!!party} onClose={onClose} title={`KYC Review — ${party.name}`} width={420}>
       <FormField label="Current Status"><Badge label={party.kycStatus} /></FormField>
-      <FormField label="Registration No."><Text style={{ color: '#EAF0FB' }}>{party.registrationNo || '—'}</Text></FormField>
+      <FormField label="Registration No."><Text style={{ color: colors.textPrimary }}>{party.registrationNo || '—'}</Text></FormField>
       <View style={styles.actions}>
         <Button label="Reject" variant="danger" small onPress={() => decide('REJECTED')} loading={saving} />
         <Button label="Verify" small onPress={() => decide('VERIFIED')} loading={saving} />

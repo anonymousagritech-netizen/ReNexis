@@ -1,44 +1,44 @@
 export const moduleColors = {
-  overview: { main: '#3E7BFA', soft: 'rgba(62,123,250,0.16)', gradient: ['#3E7BFA', '#6F9CFF'] },
-  reinsurance: { main: '#19C2A0', soft: 'rgba(25,194,160,0.16)', gradient: ['#19C2A0', '#4FE0C2'] },
-  accounting: { main: '#F2A93B', soft: 'rgba(242,169,59,0.16)', gradient: ['#F2A93B', '#FFCB6B'] },
-  investment: { main: '#A66BFF', soft: 'rgba(166,107,255,0.16)', gradient: ['#A66BFF', '#C49BFF'] },
-  generalAccounting: { main: '#FF7E54', soft: 'rgba(255,126,84,0.16)', gradient: ['#FF7E54', '#FFA47E'] },
-  compliance: { main: '#F25C84', soft: 'rgba(242,92,132,0.16)', gradient: ['#F25C84', '#FF8FAE'] },
-  reporting: { main: '#2DD4D4', soft: 'rgba(45,212,212,0.16)', gradient: ['#2DD4D4', '#6FF0F0'] },
-  lifecycle: { main: '#E0C341', soft: 'rgba(224,195,65,0.16)', gradient: ['#E0C341', '#F2DC7E'] },
-  system: { main: '#9BACCB', soft: 'rgba(155,172,203,0.16)', gradient: ['#9BACCB', '#C2D0E8'] },
+  overview: { main: '#3E7BFA', soft: 'rgba(62,123,250,0.12)', gradient: ['#3E7BFA', '#6F9CFF'] },
+  reinsurance: { main: '#0FA081', soft: 'rgba(15,160,129,0.12)', gradient: ['#0FA081', '#4FE0C2'] },
+  accounting: { main: '#C8841C', soft: 'rgba(200,132,28,0.12)', gradient: ['#C8841C', '#FFCB6B'] },
+  investment: { main: '#8B5CF6', soft: 'rgba(139,92,246,0.12)', gradient: ['#8B5CF6', '#C49BFF'] },
+  generalAccounting: { main: '#DD5A30', soft: 'rgba(221,90,48,0.12)', gradient: ['#DD5A30', '#FFA47E'] },
+  compliance: { main: '#D63A6B', soft: 'rgba(214,58,107,0.12)', gradient: ['#D63A6B', '#FF8FAE'] },
+  reporting: { main: '#0E96A3', soft: 'rgba(14,150,163,0.12)', gradient: ['#0E96A3', '#6FF0F0'] },
+  lifecycle: { main: '#B38312', soft: 'rgba(179,131,18,0.12)', gradient: ['#B38312', '#F2DC7E'] },
+  system: { main: '#64748B', soft: 'rgba(100,116,139,0.12)', gradient: ['#64748B', '#C2D0E8'] },
 };
 
 export type ModuleColorKey = keyof typeof moduleColors;
 
 export const colors = {
-  bg: '#0B1220',
-  bgElevated: '#121B2E',
-  surface: '#17223A',
-  surfaceAlt: '#1E2C49',
-  border: '#283656',
-  borderLight: '#34456B',
+  bg: '#EEF1F8',
+  bgElevated: '#F8FAFD',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F1F4FA',
+  border: '#E2E8F4',
+  borderLight: '#D7DEF0',
 
-  textPrimary: '#EAF0FB',
-  textSecondary: '#9BACCB',
-  textMuted: '#6B7CA0',
+  textPrimary: '#101828',
+  textSecondary: '#475467',
+  textMuted: '#8A93A6',
 
   primary: '#3E7BFA',
   primaryDark: '#2C5FD6',
-  primarySoft: 'rgba(62,123,250,0.15)',
+  primarySoft: 'rgba(62,123,250,0.12)',
 
-  accentTeal: '#19C2A0',
-  accentTealSoft: 'rgba(25,194,160,0.15)',
+  accentTeal: '#0FA081',
+  accentTealSoft: 'rgba(15,160,129,0.12)',
 
-  accentAmber: '#F2A93B',
-  accentAmberSoft: 'rgba(242,169,59,0.15)',
+  accentAmber: '#D98D1F',
+  accentAmberSoft: 'rgba(217,141,31,0.12)',
 
-  danger: '#F25C54',
-  dangerSoft: 'rgba(242,92,84,0.15)',
+  danger: '#E0413A',
+  dangerSoft: 'rgba(224,65,58,0.12)',
 
-  success: '#19C2A0',
-  successSoft: 'rgba(25,194,160,0.15)',
+  success: '#0FA081',
+  successSoft: 'rgba(15,160,129,0.12)',
 
   white: '#FFFFFF',
 };
